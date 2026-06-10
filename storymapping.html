@@ -50,7 +50,7 @@ header::after{content:'';position:absolute;inset:0;background:repeating-linear-g
 .h-nav-link:hover{color:#fff;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15)}
 .h-nav-link.active{color:#2dd4a8;background:rgba(45,212,168,.12);border-color:rgba(45,212,168,.3)}
 
-/* CHAPTER NAV */
+/* CHAPTER NAV — satu baris, tidak double */
 .ch-nav{
   position:sticky;top:52px;z-index:8000;
   background:var(--surface);border-bottom:1px solid var(--border2);
@@ -121,17 +121,10 @@ h3{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:9p
 .pill{display:inline-block;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:500;margin:2px}
 
 /* MAP CONTAINERS */
-#map-ch1,#map-ch3{
-  height:400px;border-radius:12px;border:1px solid var(--border2);
-  overflow:hidden;box-shadow:0 4px 16px rgba(15,25,35,.1);
-}
+#map-ch1,#map-ch3{height:400px;border-radius:12px;border:1px solid var(--border2);overflow:hidden;box-shadow:0 4px 16px rgba(15,25,35,.1)}
 
 /* MAP LEGEND OVERLAY */
-.map-legend-box{
-  background:rgba(255,255,255,.95);border:1px solid var(--border2);
-  border-radius:8px;padding:10px 12px;margin-top:8px;
-  display:flex;flex-wrap:wrap;gap:8px;align-items:center;
-}
+.map-legend-box{background:rgba(255,255,255,.95);border:1px solid var(--border2);border-radius:8px;padding:10px 12px;margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .map-leg-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--txt2)}
 .map-leg-sq{width:12px;height:12px;border-radius:2px;flex-shrink:0}
 .map-leg-line{width:20px;height:3px;border-radius:2px;flex-shrink:0}
@@ -224,6 +217,12 @@ h3{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:9p
 /* PATTERN CARDS */
 .pattern-card{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:16px 18px}
 
+/* SAMPEL BADGE */
+.s-badge{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9.5px;padding:2px 7px;border-radius:4px;margin:1px;font-weight:500}
+.s-st{background:var(--teal-lt);color:var(--teal)}
+.s-t{background:var(--blue-lt);color:var(--blue)}
+.s-r{background:var(--amber-lt);color:var(--amber)}
+
 /* DIVIDER & FOOTER */
 .divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent)}
 footer{background:linear-gradient(135deg,#0f1923 0%,#1a2e45 60%,#0f2a3a 100%);border-top:2px solid #0a3d62;padding:40px;text-align:center}
@@ -274,7 +273,7 @@ footer{background:linear-gradient(135deg,#0f1923 0%,#1a2e45 60%,#0f2a3a 100%);bo
   </div>
 </header>
 
-<!-- CHAPTER NAV -->
+<!-- CHAPTER NAV — satu nav, tidak double -->
 <nav class="ch-nav" id="ch-nav">
   <span class="ch-nav-brand">Nilai Tanah · Gondokusuman</span>
   <div class="ch-nav-links">
@@ -287,7 +286,7 @@ footer{background:linear-gradient(135deg,#0f1923 0%,#1a2e45 60%,#0f2a3a 100%);bo
   <div class="ch-nav-right">Kelompok 7 · ITS · 2026</div>
 </nav>
 
-<!-- PROGRESS BAR -->
+<!-- PROGRESS BAR — langsung setelah nav, top:96px (52+44) -->
 <div class="progress-bar-section" id="progress-bar">
   <div class="pb-item"><div class="pb-dot active" id="pd0">01</div><span class="pb-label active" id="pl0">Wilayah Studi</span></div>
   <div class="pb-line" id="pline0"></div>
@@ -330,7 +329,6 @@ footer{background:linear-gradient(135deg,#0f1923 0%,#1a2e45 60%,#0f2a3a 100%);bo
         </div>
       </div>
       <div>
-        <!-- PETA CH1: Batas Kelurahan dari GeoJSON -->
         <div id="map-ch1"></div>
         <div class="map-legend-box">
           <span style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-right:4px">Kelurahan:</span>
@@ -526,7 +524,6 @@ footer{background:linear-gradient(135deg,#0f1923 0%,#1a2e45 60%,#0f2a3a 100%);bo
 
     <div class="two-col" style="align-items:start;gap:40px;margin-bottom:40px">
       <div>
-        <!-- PETA CH3: ZNT Choropleth dari GeoJSON -->
         <div id="map-ch3"></div>
         <div class="map-legend-box">
           <span style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-right:4px">ZNT:</span>
@@ -641,12 +638,12 @@ footer{background:linear-gradient(135deg,#0f1923 0%,#1a2e45 60%,#0f2a3a 100%);bo
 
 <div class="divider"></div>
 
-<!-- ═══ CHAPTER 04 ═══ -->
+<!-- ═══ CHAPTER 04 ═══ (DIPERBARUI dengan data sampel aktual) -->
 <section id="ch4">
   <div class="container">
     <div class="ch-label">Chapter 04</div>
     <h2>Analisis Skenario:<br><span class="hl-blue">Bagaimana Jika...?</span></h2>
-    <p class="lead">Model GIS-AHP bukan sekadar potret kondisi saat ini. Kekuatan sesungguhnya terletak pada kemampuan mensimulasikan dampak perubahan infrastruktur terhadap distribusi nilai tanah.</p>
+    <p class="lead">Model GIS-AHP bukan sekadar potret kondisi saat ini. Kekuatan sesungguhnya terletak pada kemampuan mensimulasikan dampak perubahan infrastruktur terhadap distribusi nilai tanah — berbasis 16 titik sampel aktual.</p>
 
     <div class="sc-btns" style="margin-top:8px">
       <button class="sc-btn active" onclick="showSc('baseline',this)">Kondisi Saat Ini (Baseline)</button>
@@ -655,99 +652,200 @@ footer{background:linear-gradient(135deg,#0f1923 0%,#1a2e45 60%,#0f2a3a 100%);bo
       <button class="sc-btn" onclick="showSc('kombi',this)">Skenario C: Kombinasi A+B</button>
     </div>
 
-    <!-- BASELINE -->
+    <!-- ── BASELINE ── -->
     <div class="sc-content active" id="sc-baseline">
       <div class="two-col" style="align-items:start;gap:40px">
         <div class="card">
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:16px">DISTRIBUSI ZONA SAAT INI</div>
-          <div class="dist-row"><span class="dist-lbl">Sangat Tinggi</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:2.8%;background:var(--teal)"></div></div><span class="dist-pct" style="color:var(--teal)">2,80% · 9,52 Ha</span></div>
-          <div class="dist-row"><span class="dist-lbl">Tinggi</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:59.57%;background:var(--blue)"><span class="dist-bar-txt">59,6%</span></div></div><span class="dist-pct" style="color:var(--blue)">59,57% · 202,65 Ha</span></div>
-          <div class="dist-row"><span class="dist-lbl">Rendah</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:35.21%;background:var(--amber)"><span class="dist-bar-txt">35,2%</span></div></div><span class="dist-pct" style="color:var(--amber)">35,21% · 119,77 Ha</span></div>
-          <div class="dist-row"><span class="dist-lbl">Sangat Rendah</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:2.42%;background:var(--red)"></div></div><span class="dist-pct" style="color:var(--red)">2,42% · 8,24 Ha</span></div>
-          <div style="margin-top:16px;padding:12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);font-size:12.5px;color:var(--txt2);line-height:1.7">COD = <strong style="color:var(--amber)">24,3%</strong> — moderat (IAAO: 15–25% = moderat), mencerminkan variasi nilai tanah yang signifikan.</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:16px">DISTRIBUSI 16 TITIK SAMPEL — KONDISI SAAT INI</div>
+          <div class="dist-row"><span class="dist-lbl">Sangat Tinggi</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:37.5%;background:var(--teal)"><span class="dist-bar-txt">37,5%</span></div></div><span class="dist-pct" style="color:var(--teal)">6 titik</span></div>
+          <div class="dist-row"><span class="dist-lbl">Tinggi</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:37.5%;background:var(--blue)"><span class="dist-bar-txt">37,5%</span></div></div><span class="dist-pct" style="color:var(--blue)">6 titik</span></div>
+          <div class="dist-row"><span class="dist-lbl">Rendah</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:25%;background:var(--amber)"><span class="dist-bar-txt">25%</span></div></div><span class="dist-pct" style="color:var(--amber)">4 titik</span></div>
+          <div class="dist-row"><span class="dist-lbl">Sangat Rendah</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:1%;background:var(--red)"></div></div><span class="dist-pct" style="color:var(--red)">0 titik</span></div>
+
+          <div style="margin-top:18px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-bottom:10px">RINCIAN 16 TITIK SAMPEL</div>
+          <div style="font-size:11.5px;color:var(--txt2);line-height:2">
+            <span class="s-badge s-st">S1</span> Rp 28,2 jt — Koridor Jl. Solo &nbsp;
+            <span class="s-badge s-st">S2</span> Rp 32,9 jt — Dekat RS &amp; Kotabaru<br>
+            <span class="s-badge s-st">S3</span> Rp 45,8 jt — Koridor Urip Sumoharjo &nbsp;
+            <span class="s-badge s-st">S14</span> Rp 21,5 jt — Kotabaru heritage<br>
+            <span class="s-badge s-st">S15</span> Rp 47,0 jt — Pusat Kotabaru &nbsp;
+            <span class="s-badge s-st">S16</span> Rp 56,8 jt — Jl. Kotabaru (tertinggi)<br>
+            <span class="s-badge s-t">S5</span> Rp 13,6 jt — Dekat sekolah &nbsp;
+            <span class="s-badge s-t">S7</span> Rp 15,3 jt — Fasilitas pendidikan<br>
+            <span class="s-badge s-t">S9</span> Rp 12,4 jt — Koridor Demangan &nbsp;
+            <span class="s-badge s-t">S10</span> Rp 12,5 jt — Koridor Demangan<br>
+            <span class="s-badge s-t">S13</span> Rp 10,0 jt — Dekat fasilitas Klitren &nbsp;
+            <span class="s-badge s-t">S4</span> Rp 10,0 jt — Pemukiman Baciro barat<br>
+            <span class="s-badge s-r">S6</span> Rp 8,4 jt — Permukiman dalam &nbsp;
+            <span class="s-badge s-r">S8</span> Rp 9,8 jt — Permukiman padat Baciro<br>
+            <span class="s-badge s-r">S11</span> Rp 5,6 jt — Baciro timur (terendah) &nbsp;
+            <span class="s-badge s-r">S12</span> Rp 6,9 jt — Baciro timur
+          </div>
+
+          <div style="margin-top:16px;padding:12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);font-size:12.5px;color:var(--txt2);line-height:1.7">
+            COD distribusi area = <strong style="color:var(--amber)">24,3%</strong> (moderat, IAAO 15–25%). Median 16 sampel: <strong style="color:var(--blue)">Rp 13,1 jt/m²</strong>. Rentang: Rp 5,6–56,8 jt/m².
+          </div>
         </div>
         <div class="card">
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:14px">VALIDASI vs DATA LAPANGAN (16 TITIK SAMPEL)</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:14px">KONFIRMASI SPASIAL PER KELURAHAN</div>
           <div class="timeline">
-            <div class="tl-item"><div class="tl-title" style="color:var(--teal)">Jl. Kotabaru (sampel 16): Rp 56,8 jt/m² — Zona Sangat Tinggi</div><div class="tl-body">Titik tertinggi. 6 titik sampel terkonfirmasi di zona Sangat Tinggi (Rp 21,5–56,8 jt/m²).</div></div>
-            <div class="tl-item"><div class="tl-title" style="color:var(--blue)">Koridor Demangan (sampel 9-10): Rp 12,4–12,5 jt/m²</div><div class="tl-body">Zona Tinggi terkonfirmasi. 6 titik sampel di zona ini (Rp 10,0–15,3 jt/m²).</div></div>
-            <div class="tl-item"><div class="tl-title" style="color:var(--amber)">Klitren (sampel 13): Rp 10,0 jt/m²</div><div class="tl-body">Batas bawah zona Tinggi. Kepadatan tertinggi mendorong nilai, namun jarak ke jalan utama membatasi.</div></div>
-            <div class="tl-item"><div class="tl-title" style="color:var(--red)">Baciro timur (sampel 11-12): Rp 5,6–6,9 jt/m²</div><div class="tl-body">Zona Rendah — titik terendah. Tidak ada sampel di bawah Rp 5 jt/m² di seluruh wilayah.</div></div>
+            <div class="tl-item"><div class="tl-title" style="color:var(--teal)">Kotabaru — 4 sampel (S2, S14, S15, S16): Rp 21,5–56,8 jt/m²</div><div class="tl-body">Semua masuk zona Sangat Tinggi. S16 (Rp 56,8 jt) adalah titik tertinggi seluruh wilayah — nilai premium heritage + aksesibilitas sempurna.</div></div>
+            <div class="tl-item"><div class="tl-title" style="color:var(--teal)">Koridor Arteri (S1, S3) — Rp 28,2 &amp; 45,8 jt/m²</div><div class="tl-body">Jl. Solo dan Urip Sumoharjo menghasilkan 2 titik Sangat Tinggi. Efek dominan aksesibilitas jalan (bobot 34,44%) terkonfirmasi langsung.</div></div>
+            <div class="tl-item"><div class="tl-title" style="color:var(--blue)">Demangan &amp; Klitren (S9, S10, S13) — Rp 10–12,5 jt/m²</div><div class="tl-body">Zona Tinggi yang konsisten. Kepadatan dan kedekatan fasilitas menopang nilai, meski jauh dari koridor arteri utama.</div></div>
+            <div class="tl-item"><div class="tl-title" style="color:var(--blue)">Baciro barat (S4, S5, S7) — Rp 10–15,3 jt/m²</div><div class="tl-body">Tiga titik Zona Tinggi. Kedekatan dengan fasilitas pendidikan dan jalan kolektor menjaga nilai di atas Rp 10 jt/m².</div></div>
+            <div class="tl-item"><div class="tl-title" style="color:var(--red)">Baciro timur (S11, S12) — Rp 5,6–6,9 jt/m²</div><div class="tl-body">Titik terendah wilayah. Terisolasi dari jaringan jalan utama dan minim fasilitas — kandidat prioritas intervensi infrastruktur.</div></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- SKENARIO A -->
+    <!-- ── SKENARIO A ── -->
     <div class="sc-content" id="sc-rs">
       <div class="two-col" style="align-items:start;gap:40px">
         <div class="card">
           <div style="padding:12px 14px;background:var(--purple-lt);border-radius:8px;border:1px solid rgba(90,48,160,.25);margin-bottom:16px">
-            <div style="font-size:12px;color:var(--purple);font-weight:600;margin-bottom:4px">Asumsi: RS Tipe C di Baciro tengah (~-7.790, 110.385)</div>
-            <div style="font-size:11.5px;color:var(--txt2)">Variabel fasilitas kesehatan (bobot 15,29%) yang saat ini skor buruk untuk Baciro akan berubah drastis.</div>
+            <div style="font-size:12px;color:var(--purple);font-weight:600;margin-bottom:4px">Asumsi: RS Tipe C baru di Baciro tengah (~-7.790, 110.385)</div>
+            <div style="font-size:11.5px;color:var(--txt2)">Variabel fasilitas kesehatan (bobot 15,29%) yang saat ini memberi skor buruk untuk Baciro akan berubah drastis. Analisis berbasis posisi 16 titik sampel terhadap pusat RS asumsi.</div>
           </div>
           <div class="timeline">
-            <div class="tl-item"><div class="tl-title" style="color:var(--teal)">Radius 0–200 m: Dampak langsung</div><div class="tl-body">Kenaikan nilai tanah +15–25%. Sekitar <strong>8–12 Ha</strong> terdampak langsung.</div></div>
-            <div class="tl-item"><div class="tl-title" style="color:var(--blue)">Radius 200–600 m: Dampak moderat</div><div class="tl-body">Kenaikan +8–12%. Sekitar <strong>20–30 Ha</strong> berpotensi naik dari Rendah ke Tinggi.</div></div>
-            <div class="tl-item"><div class="tl-title" style="color:var(--amber)">Return on Investment tertinggi</div><div class="tl-body">Pembangunan RS baru di Baciro adalah investasi dengan <strong>multiplier effect terbesar per rupiah</strong>.</div></div>
+            <div class="tl-item">
+              <div class="tl-title" style="color:var(--teal)">Radius 0–200 m: S5 &amp; S7 — dampak langsung</div>
+              <div class="tl-body">S5 (Rp 13,6 jt, ±190 m) dan S7 (Rp 15,3 jt, ±170 m) berada dalam radius terdekat. Keduanya sudah di zona Tinggi, tetapi kedekatan RS baru mendorong ke batas atas Tinggi atau masuk Sangat Tinggi. Estimasi kenaikan: <strong>+15–20%</strong>.</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-title" style="color:var(--blue)">Radius 200–400 m: S6 &amp; S8 — dampak paling signifikan</div>
+              <div class="tl-body">S6 (Rp 8,4 jt, ±280 m) dan S8 (Rp 9,8 jt, ±350 m) berada di zona Rendah. Dengan RS baru, skor buffer kesehatan mereka berubah dari skor 5 → skor 3, mendorong keduanya naik ke zona Tinggi. Estimasi kenaikan: <strong>+10–15%</strong> → proyeksi Rp 9,3–11,3 jt/m².</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-title" style="color:var(--amber)">Radius 400–600 m: S4 — titik paling responsif</div>
+              <div class="tl-body">S4 (Rp 10,0 jt, ±450 m) berada tepat di batas zona Tinggi-Rendah. Penguatan buffer RS dalam radius ini mengkonsolidasikan S4 ke zona Tinggi yang lebih stabil. Estimasi kenaikan: <strong>+8–10%</strong> → Rp 10,8–11,0 jt/m².</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-title" style="color:var(--txt3)">Di luar 600 m: S11 &amp; S12 — dampak minimal</div>
+              <div class="tl-body">S11 (Rp 5,6 jt) dan S12 (Rp 6,9 jt) berada >700 m dari lokasi RS asumsi. Perbaikan skor kesehatan tidak signifikan — tetap di zona Rendah. Perlu intervensi tambahan (lihat Skenario B atau C).</div>
+            </div>
           </div>
         </div>
         <div class="card">
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:16px">PROYEKSI PERUBAHAN DISTRIBUSI</div>
-          <div class="dist-row"><span class="dist-lbl">Sangat Tinggi</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:3.5%;background:var(--teal)"></div></div><span class="dist-pct" style="color:var(--teal)">2,8% → <strong>3,5%</strong></span></div>
-          <div class="dist-row"><span class="dist-lbl">Tinggi</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:65%;background:var(--blue)"><span class="dist-bar-txt">65%</span></div></div><span class="dist-pct" style="color:var(--blue)">59,6% → <strong>65,0%</strong></span></div>
-          <div class="dist-row"><span class="dist-lbl">Rendah</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:29%;background:var(--amber)"><span class="dist-bar-txt">29%</span></div></div><span class="dist-pct" style="color:var(--amber)">35,2% → <strong>29,0%</strong></span></div>
-          <div class="dist-row"><span class="dist-lbl">Sangat Rendah</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:2.5%;background:var(--red)"></div></div><span class="dist-pct" style="color:var(--red)">2,4% → <strong>2,5%</strong></span></div>
-          <div style="margin-top:14px;padding:12px;background:var(--teal-lt);border-radius:8px;border:1px solid rgba(10,124,110,.2);font-size:12.5px;color:var(--teal)">Rata-rata peningkatan nilai tanah di Baciro: <strong>+8–12%</strong>.</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:16px">PROYEKSI PERUBAHAN DISTRIBUSI SAMPEL</div>
+          <div class="dist-row"><span class="dist-lbl">Sangat Tinggi</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:43.75%;background:var(--teal)"><span class="dist-bar-txt">43,75%</span></div></div><span class="dist-pct" style="color:var(--teal)">6 → <strong>7 titik</strong></span></div>
+          <div class="dist-row"><span class="dist-lbl">Tinggi</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:50%;background:var(--blue)"><span class="dist-bar-txt">50%</span></div></div><span class="dist-pct" style="color:var(--blue)">6 → <strong>8 titik</strong></span></div>
+          <div class="dist-row"><span class="dist-lbl">Rendah</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:6.25%;background:var(--amber)"></div></div><span class="dist-pct" style="color:var(--amber)">4 → <strong>1 titik</strong></span></div>
+          <div class="dist-row"><span class="dist-lbl">Sangat Rendah</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:1%;background:var(--red)"></div></div><span class="dist-pct" style="color:var(--red)">0 titik</span></div>
+
+          <div style="margin-top:16px;padding:12px;background:var(--teal-lt);border-radius:8px;border:1px solid rgba(10,124,110,.2);font-size:12.5px;color:var(--teal);line-height:1.7">
+            Zona Tinggi+ST naik dari <strong>12 → 15 titik</strong> (75% → 93,75%). Titik Rendah berkurang dari <strong>4 → 1 titik</strong>. Rata-rata kenaikan nilai di Baciro tengah: <strong>+8–15%</strong>.
+          </div>
+          <div style="margin-top:12px;padding:12px;background:var(--purple-lt);border-radius:8px;border:1px solid rgba(90,48,160,.2);font-size:12px;color:var(--purple);line-height:1.7">
+            <strong>Titik paling responsif:</strong> S6 (Rp 8,4 jt) dan S8 (Rp 9,8 jt) adalah dua titik yang paling terdampak karena posisinya di radius 200–400 m — berpotensi naik dari Rendah ke Tinggi secara langsung.
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- SKENARIO B -->
+    <!-- ── SKENARIO B ── -->
     <div class="sc-content" id="sc-jalan">
       <div class="two-col" style="align-items:start;gap:40px">
         <div class="card">
           <div style="padding:12px 14px;background:var(--amber-lt);border-radius:8px;border:1px solid rgba(176,90,0,.25);margin-bottom:16px">
-            <div style="font-size:12px;color:var(--amber);font-weight:600;margin-bottom:4px">Asumsi: Jalan arteri baru ±1,2 km di koridor timur Klitren–Terban</div>
-            <div style="font-size:11.5px;color:var(--txt2)">Variabel aksesibilitas (bobot <strong>34,44%</strong> — paling dominan) berubah sepenuhnya di koridor baru.</div>
+            <div style="font-size:12px;color:var(--amber);font-weight:600;margin-bottom:4px">Asumsi: Jalan arteri baru ±1,2 km di koridor timur Klitren–Terban (sekitar lng 110.390–110.394)</div>
+            <div style="font-size:11.5px;color:var(--txt2)">Variabel aksesibilitas (bobot <strong>34,44% — tertinggi</strong>) berubah total di sepanjang koridor baru. Dampak terbesar secara spasial karena bobot dominan.</div>
           </div>
           <div class="timeline">
-            <div class="tl-item"><div class="tl-title" style="color:var(--amber)">Koridor 0–50 m jalan baru: Dampak terbesar</div><div class="tl-body">Kenaikan nilai +30–40%. Perubahan langsung ke zona Sangat Tinggi atau Tinggi.</div></div>
-            <div class="tl-item"><div class="tl-title" style="color:var(--blue)">Konektivitas Terban–Klitren meningkat</div><div class="tl-body">Zona Rendah di timur Klitren berpotensi naik ke Tinggi. Dampak spasial paling luas.</div></div>
-            <div class="tl-item"><div class="tl-title" style="color:var(--red)">⚠ Perhatian: Risiko Displacement</div><div class="tl-body">Kenaikan harga terlalu cepat berpotensi menyebabkan <strong>displacement</strong> penghuni berpenghasilan rendah.</div></div>
+            <div class="tl-item">
+              <div class="tl-title" style="color:var(--red)">S11 &amp; S12 — kenaikan paling dramatis</div>
+              <div class="tl-body">S11 (Rp 5,6 jt, -7.786, 110.393) dan S12 (Rp 6,9 jt, -7.786, 110.392) adalah dua titik terendah dan paling terdampak langsung — berada persis di koridor jalan baru (buffer 0–50 m). Skor aksesibilitas berubah dari 5 → 1. Estimasi kenaikan: <strong>+30–40%</strong> → proyeksi Rp 7,3–9,7 jt/m², naik dari Rendah ke perbatasan Tinggi.</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-title" style="color:var(--amber)">S4 &amp; S8 — konsolidasi ke zona Tinggi</div>
+              <div class="tl-body">S4 (Rp 10,0 jt, 110.394) dan S8 (Rp 9,8 jt, 110.389) sudah di batas Tinggi-Rendah. Jalan baru memperkuat posisi mereka di zona Tinggi secara konsisten. Estimasi: <strong>+15–20%</strong> → Rp 11,3–12,0 jt/m².</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-title" style="color:var(--blue)">Klitren–Terban — dampak moderat</div>
+              <div class="tl-body">S13 (Rp 10,0 jt, Klitren) dan titik Terban terdekat mendapat perbaikan aksesibilitas dalam radius 50–100 m. Zona Tinggi yang ada semakin diperkuat, bukan naik kelas. Estimasi: <strong>+8–12%</strong>.</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-title" style="color:var(--txt3)">Demangan &amp; Kotabaru — tidak terdampak signifikan</div>
+              <div class="tl-body">S1–S3, S9–S10, S14–S16 sudah di zona Tinggi/Sangat Tinggi dengan aksesibilitas optimal. Jalan timur tidak mengubah posisi mereka secara material.</div>
+            </div>
           </div>
         </div>
         <div class="card">
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:16px">PROYEKSI PERUBAHAN DISTRIBUSI</div>
-          <div class="dist-row"><span class="dist-lbl">Sangat Tinggi</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:5.2%;background:var(--teal)"></div></div><span class="dist-pct" style="color:var(--teal)">2,8% → <strong>5,2%</strong></span></div>
-          <div class="dist-row"><span class="dist-lbl">Tinggi</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:68%;background:var(--blue)"><span class="dist-bar-txt">68%</span></div></div><span class="dist-pct" style="color:var(--blue)">59,6% → <strong>68,0%</strong></span></div>
-          <div class="dist-row"><span class="dist-lbl">Rendah</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:25%;background:var(--amber)"><span class="dist-bar-txt">25%</span></div></div><span class="dist-pct" style="color:var(--amber)">35,2% → <strong>25,0%</strong></span></div>
-          <div class="dist-row"><span class="dist-lbl">Sangat Rendah</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:1.8%;background:var(--red)"></div></div><span class="dist-pct" style="color:var(--red)">2,4% → <strong>1,8%</strong></span></div>
-          <div style="margin-top:14px;padding:12px;background:var(--amber-lt);border-radius:8px;border:1px solid rgba(176,90,0,.2);font-size:12.5px;color:var(--amber)">Zona Tinggi+Sangat Tinggi naik dari <strong>62,4% → 73,2%</strong>.</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:16px">PROYEKSI PERUBAHAN DISTRIBUSI SAMPEL</div>
+          <div class="dist-row"><span class="dist-lbl">Sangat Tinggi</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:37.5%;background:var(--teal)"><span class="dist-bar-txt">37,5%</span></div></div><span class="dist-pct" style="color:var(--teal)">6 titik</span></div>
+          <div class="dist-row"><span class="dist-lbl">Tinggi</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:56.25%;background:var(--blue)"><span class="dist-bar-txt">56,25%</span></div></div><span class="dist-pct" style="color:var(--blue)">6 → <strong>9 titik</strong></span></div>
+          <div class="dist-row"><span class="dist-lbl">Rendah</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:6.25%;background:var(--amber)"></div></div><span class="dist-pct" style="color:var(--amber)">4 → <strong>1 titik</strong></span></div>
+          <div class="dist-row"><span class="dist-lbl">Sangat Rendah</span><div class="dist-bar-wrap"><div class="dist-bar" style="width:1%;background:var(--red)"></div></div><span class="dist-pct" style="color:var(--red)">0 titik</span></div>
+
+          <div style="margin-top:16px;padding:12px;background:var(--amber-lt);border-radius:8px;border:1px solid rgba(176,90,0,.2);font-size:12.5px;color:var(--amber);line-height:1.7">
+            Zona Tinggi+ST naik dari <strong>12 → 15 titik</strong> (75% → 93,75%). Dampak spasial terluas karena bobot aksesibilitas 34,44%.
+          </div>
+          <div style="margin-top:12px;padding:12px;background:var(--red-lt);border-radius:8px;border:1px solid rgba(184,40,40,.2);font-size:12px;color:var(--red);line-height:1.7">
+            <strong>⚠ Risiko displacement:</strong> S11 (Rp 5,6 jt) dan S12 (Rp 6,9 jt) adalah titik paling rentan — kenaikan +30–40% berpotensi memicu penggusuran penghuni berpenghasilan rendah di Baciro timur. Diperlukan kebijakan hunian terjangkau bersamaan.
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- SKENARIO C -->
+    <!-- ── SKENARIO C ── -->
     <div class="sc-content" id="sc-kombi">
       <div class="card" style="margin-bottom:16px">
-        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:16px">SKENARIO C: RS BARU + JALAN ARTERI BARU (KOMBINASI)</div>
-        <div class="cmp-grid">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:16px">SKENARIO C: RS BARU + JALAN ARTERI BARU (KOMBINASI A+B)</div>
+        <div class="cmp-grid" style="margin-bottom:20px">
           <div class="cmp-card">
-            <div class="cmp-ttl">Baseline</div>
-            <div class="cmp-val"><span style="color:var(--teal)">ST: 2,80%</span><br><span style="color:var(--blue)">T: 59,57%</span><br><span style="color:var(--amber)">R: 35,21%</span><br><span style="color:var(--red)">SR: 2,42%</span><br><span style="color:var(--txt3);font-size:10px">Tinggi+ST: 62,4%</span></div>
+            <div class="cmp-ttl">Baseline (saat ini)</div>
+            <div class="cmp-val">
+              <span style="color:var(--teal)">ST: 6 titik (37,5%)</span><br>
+              <span style="color:var(--blue)">T: 6 titik (37,5%)</span><br>
+              <span style="color:var(--amber)">R: 4 titik (25,0%)</span><br>
+              <span style="color:var(--red)">SR: 0 titik (0%)</span><br>
+              <span style="color:var(--txt3);font-size:10px">Tinggi+ST: 75%</span>
+            </div>
           </div>
           <div class="cmp-card" style="background:var(--teal-lt);border-color:rgba(10,124,110,.3)">
             <div class="cmp-ttl" style="color:var(--teal)">Setelah Skenario C</div>
-            <div class="cmp-val"><span style="color:var(--teal);font-weight:600">ST: 6,0% ↑</span><br><span style="color:var(--blue);font-weight:600">T: 72,0% ↑</span><br><span style="color:var(--amber);font-weight:600">R: 20,5% ↓</span><br><span style="color:var(--red);font-weight:600">SR: 1,5% ↓</span><br><span style="color:var(--teal);font-size:10px;font-weight:600">Tinggi+ST: 78,0% ↑</span></div>
+            <div class="cmp-val">
+              <span style="color:var(--teal);font-weight:600">ST: 6–7 titik ↑</span><br>
+              <span style="color:var(--blue);font-weight:600">T: 9–10 titik ↑</span><br>
+              <span style="color:var(--amber);font-weight:600">R: 0 titik ↓↓</span><br>
+              <span style="color:var(--red)">SR: 0 titik</span><br>
+              <span style="color:var(--teal);font-size:10px;font-weight:600">Tinggi+ST: ~100%</span>
+            </div>
           </div>
           <div class="cmp-card" style="background:var(--blue-lt);border-color:rgba(21,88,168,.3)">
-            <div class="cmp-ttl" style="color:var(--blue)">Estimasi Dampak</div>
-            <div class="cmp-val" style="font-size:12px;line-height:1.7;color:var(--txt2)">Zona Tinggi+ST meningkat <strong style="color:var(--teal)">+15,6 poin</strong>.<br><br>Zona Rendah+SR berkurang dari <strong style="color:var(--red)">37,6%</strong> → <strong style="color:var(--teal)">22,0%</strong>.<br><br>Skenario pemerataan <strong>paling signifikan</strong>.</div>
+            <div class="cmp-ttl" style="color:var(--blue)">Titik yang naik kelas</div>
+            <div class="cmp-val" style="font-size:11.5px;line-height:1.9;color:var(--txt2)">
+              <span class="s-badge s-r" style="font-size:10px">S6</span> Rp 8,4 jt → Tinggi<br>
+              <span class="s-badge s-r" style="font-size:10px">S8</span> Rp 9,8 jt → Tinggi+<br>
+              <span class="s-badge s-r" style="font-size:10px">S11</span> Rp 5,6 jt → Tinggi<br>
+              <span class="s-badge s-r" style="font-size:10px">S12</span> Rp 6,9 jt → Tinggi<br>
+              <span class="s-badge s-t" style="font-size:10px">S4</span> Rp 10,0 jt → Tinggi+
+            </div>
           </div>
         </div>
+
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-bottom:12px">SINERGITAS SKENARIO A+B PER TITIK SAMPEL KUNCI</div>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-title" style="color:var(--teal)">S11 (Rp 5,6 jt) — titik terendah, dampak terbesar</div>
+            <div class="tl-body">Skenario B (jalan) mengangkat aksesibilitas +30–40%. Skenario A (RS) menambah perbaikan kesehatan meski radius lebih jauh. Gabungan: estimasi kenaikan <strong>+35–45%</strong> → proyeksi Rp 7,6–8,1 jt/m². Naik dari Rendah ke Tinggi.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-title" style="color:var(--teal)">S12 (Rp 6,9 jt) — titik Baciro timur kedua</div>
+            <div class="tl-body">Profil serupa S11. Kombinasi A+B menghasilkan estimasi kenaikan <strong>+30–40%</strong> → proyeksi Rp 9,0–9,7 jt/m². Mendekati batas atas zona Rendah / batas bawah Tinggi.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-title" style="color:var(--blue)">S6 (Rp 8,4 jt) + S8 (Rp 9,8 jt) — zona tengah Baciro</div>
+            <div class="tl-body">S6 dan S8 mendapat ganda dari A (radius 200–400 m dari RS) dan B (buffer jalan moderat). Estimasi kenaikan gabungan: <strong>+20–25%</strong> → proyeksi S6: Rp 10,1–10,5 jt/m²; S8: Rp 11,8–12,3 jt/m². Keduanya masuk zona Tinggi.</div>
+          </div>
+          <div class="tl-item">
+            <div class="tl-title" style="color:var(--blue)">S4 (Rp 10,0 jt) — batas Tinggi-Rendah Baciro barat</div>
+            <div class="tl-body">Sudah berada di batas atas Tinggi. Kombinasi A+B mengkonsolidasikan posisi ini secara permanen — tidak ada risiko turun ke Rendah. Estimasi: <strong>+12–18%</strong> → Rp 11,2–11,8 jt/m².</div>
+          </div>
+        </div>
+
         <div style="margin-top:16px;padding:12px 16px;background:var(--red-lt);border-radius:8px;border:1px solid rgba(184,40,40,.2);font-size:12.5px;color:var(--red);line-height:1.7">
-          <strong>⚠ Catatan penting:</strong> Kenaikan nilai tanah yang signifikan berpotensi menyebabkan <em>displacement</em> bagi penghuni berpenghasilan rendah. Kebijakan perumahan inklusif perlu disiapkan bersamaan dengan pembangunan infrastruktur.
+          <strong>⚠ Catatan kebijakan penting:</strong> Skenario C berpotensi mengeliminasi zona Rendah dari seluruh 16 titik sampel. Ini adalah skenario pemerataan paling signifikan — namun kenaikan nilai yang cepat dan luas berisiko menyebabkan <em>displacement</em> massal penghuni berpenghasilan rendah, terutama di Baciro timur. Kebijakan perumahan inklusif dan batas kenaikan NJOP bertahap harus disiapkan bersamaan dengan pembangunan infrastruktur.
         </div>
       </div>
     </div>
@@ -772,17 +870,17 @@ footer{background:linear-gradient(135deg,#0f1923 0%,#1a2e45 60%,#0f2a3a 100%);bo
       <div class="rekom-card" style="border-left-color:var(--blue)">
         <span class="rekom-tag" style="background:var(--blue-lt);color:var(--blue)">PRIORITAS TINGGI · JANGKA MENENGAH (2–5 THN)</span>
         <h3>2. Peningkatan Aksesibilitas Koridor Timur</h3>
-        <p class="body-text">Wilayah timur Klitren dan sebagian Terban mencatat nilai tanah rendah akibat terisolasi dari jaringan jalan utama. Skenario B membuktikan bahwa investasi infrastruktur jalan berpotensi meningkatkan nilai tanah 15–25%. <strong>Tindakan:</strong> Pelebaran atau pembukaan jalan kolektor baru di koridor timur Klitren–Terban.</p>
+        <p class="body-text">Wilayah timur Klitren dan Baciro timur (S11, S12) mencatat nilai tanah terendah akibat terisolasi dari jaringan jalan utama. Skenario B membuktikan investasi jalan berpotensi meningkatkan nilai +30–40% di titik-titik tersebut. <strong>Tindakan:</strong> Pelebaran atau pembukaan jalan kolektor baru di koridor timur Klitren–Terban dengan kebijakan hunian terjangkau bersamaan.</p>
       </div>
       <div class="rekom-card" style="border-left-color:var(--purple)">
         <span class="rekom-tag" style="background:var(--purple-lt);color:var(--purple)">PRIORITAS SEDANG · JANGKA MENENGAH (3–5 THN)</span>
         <h3>3. Penambahan Fasilitas Kesehatan di Baciro Selatan</h3>
-        <p class="body-text">Sekitar 30% wilayah Baciro berada di luar radius optimal (&gt;600 m) dari fasilitas kesehatan. Skenario A membuktikan pembangunan puskesmas di Baciro dapat meningkatkan nilai tanah 8–12%. <strong>Tindakan:</strong> Studi kelayakan lokasi fasilitas kesehatan baru berbasis aksesibilitas spasial.</p>
+        <p class="body-text">S6 (Rp 8,4 jt) dan S8 (Rp 9,8 jt) di radius 200–400 m dari lokasi RS asumsi adalah titik yang paling langsung terdampak. Skenario A membuktikan penambahan RS dapat mengangkat keduanya dari zona Rendah ke Tinggi (+8–15%). <strong>Tindakan:</strong> Studi kelayakan lokasi puskesmas/RS baru di Baciro tengah berbasis analisis aksesibilitas spasial.</p>
       </div>
       <div class="rekom-card" style="border-left-color:var(--amber)">
         <span class="rekom-tag" style="background:var(--amber-lt);color:var(--amber)">PRIORITAS SEDANG · BERKELANJUTAN</span>
         <h3>4. Pengendalian Alih Fungsi Lahan Heritage Kotabaru</h3>
-        <p class="body-text">Kawasan heritage Kotabaru memiliki nilai tanah sangat tinggi yang menciptakan tekanan alih fungsi. <strong>Tindakan:</strong> Pertegas batasan fungsi komersial di RDTR Kotabaru, terapkan <em>Transfer of Development Rights (TDR)</em> sebagai insentif pelestarian.</p>
+        <p class="body-text">Kawasan heritage Kotabaru (S14–S16, Rp 21,5–56,8 jt/m²) memiliki nilai tanah sangat tinggi yang menciptakan tekanan alih fungsi. <strong>Tindakan:</strong> Pertegas batasan fungsi komersial di RDTR Kotabaru, terapkan <em>Transfer of Development Rights (TDR)</em> sebagai insentif pelestarian.</p>
       </div>
       <div class="rekom-card" style="border-left-color:var(--red)">
         <span class="rekom-tag" style="background:var(--red-lt);color:var(--red)">JANGKA PANJANG (5–10 THN)</span>
@@ -797,15 +895,15 @@ footer{background:linear-gradient(135deg,#0f1923 0%,#1a2e45 60%,#0f2a3a 100%);bo
       <div class="three-col">
         <div style="padding:0 16px 0 0;border-right:1px solid var(--border)">
           <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--blue);margin-bottom:10px">Aksesibilitas adalah penentu utama</div>
-          <div class="body-text">Dengan bobot 34,44%, jalan utama adalah variabel tunggal paling berpengaruh. Setiap investasi infrastruktur jalan adalah <strong>kebijakan nilai tanah</strong> secara langsung.</div>
+          <div class="body-text">Dengan bobot 34,44%, jalan utama adalah variabel tunggal paling berpengaruh. Setiap investasi infrastruktur jalan adalah <strong>kebijakan nilai tanah</strong> secara langsung — terbukti dari selisih S11 (Rp 5,6 jt, jauh jalan) vs S16 (Rp 56,8 jt, koridor utama).</div>
         </div>
         <div style="padding:0 16px;border-right:1px solid var(--border)">
           <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--teal);margin-bottom:10px">Gradien pusat–pinggiran terkonfirmasi</div>
-          <div class="body-text">Pola nilai tanah konsisten dengan teori bid-rent Alonso (1964): nilai tertinggi di Kotabaru–Demangan, menurun gradual ke Baciro–Terban.</div>
+          <div class="body-text">Pola nilai tanah konsisten dengan teori bid-rent Alonso (1964): nilai tertinggi di Kotabaru–Demangan, menurun gradual ke Baciro–Terban. Seluruh 16 sampel mendukung pola ini tanpa anomali.</div>
         </div>
         <div style="padding:0 0 0 16px">
-          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--amber);margin-bottom:10px">Potensi pemerataan ada di timur</div>
-          <div class="body-text">Investasi di koridor timur Klitren dan selatan Baciro memiliki <strong>return on investment tertinggi</strong> dalam konteks pemerataan nilai tanah.</div>
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--amber);margin-bottom:10px">Potensi pemerataan ada di Baciro timur</div>
+          <div class="body-text">S11 dan S12 (Baciro timur) adalah titik dengan <strong>return on investment tertinggi</strong> untuk intervensi — kenaikan +30–40% dari jalan baru saja, dan +35–45% dari kombinasi A+B.</div>
         </div>
       </div>
     </div>
@@ -839,14 +937,11 @@ footer{background:linear-gradient(135deg,#0f1923 0%,#1a2e45 60%,#0f2a3a 100%);bo
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ═══════════════════════════════════════════════════
-// CONFIG — sama persis dengan webgis.html
-// ═══════════════════════════════════════════════════
 const ZNT_CFG={
-  1:{color:'#7a0000',fillColor:'#c83232',label:'Sangat Tinggi',kelas:'sangat-tinggi',range:'> Rp 20 jt/m²'},
-  2:{color:'#7a3a00',fillColor:'#e8a020',label:'Tinggi',       kelas:'tinggi',       range:'Rp 10–20 jt/m²'},
-  3:{color:'#0d4a20',fillColor:'#28c080',label:'Rendah',       kelas:'rendah',       range:'Rp 5–10 jt/m²'},
-  4:{color:'#08306e',fillColor:'#2878d0',label:'Sangat Rendah',kelas:'sangat-rendah',range:'< Rp 5 jt/m²'}
+  1:{color:'#7a0000',fillColor:'#c83232',label:'Sangat Tinggi',range:'> Rp 20 jt/m²'},
+  2:{color:'#7a3a00',fillColor:'#e8a020',label:'Tinggi',range:'Rp 10–20 jt/m²'},
+  3:{color:'#0d4a20',fillColor:'#28c080',label:'Rendah',range:'Rp 5–10 jt/m²'},
+  4:{color:'#08306e',fillColor:'#2878d0',label:'Sangat Rendah',range:'< Rp 5 jt/m²'}
 };
 function zntCfg(gc){return ZNT_CFG[gc]||ZNT_CFG[4];}
 
@@ -854,10 +949,7 @@ const KEL_COLORS={
   'Kotabaru':'#1558a8','Demangan':'#0a9e7c','Klitren':'#6b30c0',
   'Baciro':'#c87800','Terban':'#d63060'
 };
-const KEL_LUAS={
-  'Kotabaru':'0,72 km²','Demangan':'0,74 km²','Klitren':'0,68 km²',
-  'Baciro':'1,06 km²','Terban':'0,80 km²'
-};
+const KEL_LUAS={'Kotabaru':'0,72 km²','Demangan':'0,74 km²','Klitren':'0,68 km²','Baciro':'1,06 km²','Terban':'0,80 km²'};
 const KEL_KARAKTER={
   'Kotabaru':'Heritage kolonial, nilai tanah tertinggi',
   'Demangan':'Zona akademik & transisi komersial',
@@ -865,8 +957,13 @@ const KEL_KARAKTER={
   'Baciro':'Beragam — utara tinggi, selatan rendah',
   'Terban':'Transisi — koridor komersial ke pinggiran'
 };
-
-// Fallback ZNT inline (sama dengan webgis.html)
+const KEL_BOUNDS_FALLBACK={
+  'Kotabaru':[[-7.773,110.377],[-7.783,110.390]],
+  'Demangan':[[-7.781,110.378],[-7.791,110.390]],
+  'Klitren': [[-7.779,110.380],[-7.789,110.392]],
+  'Baciro':  [[-7.783,110.380],[-7.795,110.396]],
+  'Terban':  [[-7.769,110.374],[-7.782,110.390]]
+};
 const ZNT_FALLBACK={"type":"FeatureCollection","features":[
   {"type":"Feature","properties":{"OBJECTID":1,"gridcode":1},"geometry":{"type":"Polygon","coordinates":[[[110.372,-7.778],[110.378,-7.778],[110.378,-7.784],[110.372,-7.784],[110.372,-7.778]]]}},
   {"type":"Feature","properties":{"OBJECTID":2,"gridcode":2},"geometry":{"type":"Polygon","coordinates":[[[110.378,-7.778],[110.386,-7.778],[110.386,-7.787],[110.378,-7.787],[110.378,-7.778]]]}},
@@ -875,39 +972,17 @@ const ZNT_FALLBACK={"type":"FeatureCollection","features":[
   {"type":"Feature","properties":{"OBJECTID":5,"gridcode":2},"geometry":{"type":"Polygon","coordinates":[[[110.386,-7.789],[110.396,-7.789],[110.396,-7.796],[110.386,-7.796],[110.386,-7.789]]]}}
 ]};
 
-const KEL_BOUNDS_FALLBACK={
-  'Kotabaru':[[-7.773,110.377],[-7.783,110.390]],
-  'Demangan':[[-7.781,110.378],[-7.791,110.390]],
-  'Klitren': [[-7.779,110.380],[-7.789,110.392]],
-  'Baciro':  [[-7.783,110.380],[-7.795,110.396]],
-  'Terban':  [[-7.769,110.374],[-7.782,110.390]]
-};
-
 async function fetchGJ(path){
   try{const r=await fetch(path);if(!r.ok)throw 0;return await r.json();}
   catch(e){return null;}
 }
 
-// ═══════════════════════════════════════════════════
-// MAP CH1 — Batas Kelurahan dari kecamatan.geojson
-// ═══════════════════════════════════════════════════
 async function buildMapCh1(){
-  const m=L.map('map-ch1',{
-    zoomControl:true,
-    scrollWheelZoom:false,
-    attributionControl:false
-  });
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    maxZoom:19,attribution:'© OpenStreetMap'
-  }).addTo(m);
-
+  const m=L.map('map-ch1',{zoomControl:true,scrollWheelZoom:false,attributionControl:false});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(m);
   m.fitBounds([[-7.796,110.371],[-7.767,110.398]]);
-
   const data=await fetchGJ('data/kecamatan.geojson');
-
-  if(data && data.features && data.features.length>0){
-    // Load dari GeoJSON asli
+  if(data&&data.features&&data.features.length>0){
     L.geoJSON(data,{
       style:f=>{
         const nm=f.properties.NAME_4||f.properties.NAMOBJ||f.properties.name||'';
@@ -917,65 +992,29 @@ async function buildMapCh1(){
       onEachFeature:(f,lyr)=>{
         const nm=f.properties.NAME_4||f.properties.NAMOBJ||f.properties.name||'Kelurahan';
         const col=KEL_COLORS[nm]||'#1558a8';
-        lyr.bindTooltip(
-          `<span style="font-family:'Instrument Sans',sans-serif;font-size:11px;font-weight:600;color:${col}">${nm}</span>`,
-          {sticky:true,className:'ll-tip'}
-        );
-        lyr.bindPopup(`
-          <div style="font-family:'Instrument Sans',sans-serif;padding:2px">
-            <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:${col};margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #d8e2f0">${nm}</div>
-            <div style="font-size:11px;color:#3d5068;margin-bottom:3px">📍 Kec. Gondokusuman, Yogyakarta</div>
-            <div style="font-size:11px;color:#3d5068;margin-bottom:3px">📐 Luas: ${KEL_LUAS[nm]||'-'}</div>
-            <div style="font-size:11px;color:#3d5068">${KEL_KARAKTER[nm]||''}</div>
-          </div>
-        `);
+        lyr.bindTooltip(`<span style="font-family:'Instrument Sans',sans-serif;font-size:11px;font-weight:600;color:${col}">${nm}</span>`,{sticky:true,className:'ll-tip'});
+        lyr.bindPopup(`<div style="font-family:'Instrument Sans',sans-serif;padding:2px"><div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:${col};margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #d8e2f0">${nm}</div><div style="font-size:11px;color:#3d5068;margin-bottom:3px">📍 Kec. Gondokusuman, Yogyakarta</div><div style="font-size:11px;color:#3d5068;margin-bottom:3px">📐 Luas: ${KEL_LUAS[nm]||'-'}</div><div style="font-size:11px;color:#3d5068">${KEL_KARAKTER[nm]||''}</div></div>`);
         lyr.on('mouseover',function(){this.setStyle({fillOpacity:0.4,weight:3});});
         lyr.on('mouseout', function(){this.setStyle({fillOpacity:0.18,weight:2.5});});
       }
     }).addTo(m);
   } else {
-    // Fallback: rectangle per kelurahan
     Object.entries(KEL_BOUNDS_FALLBACK).forEach(([nm,bounds])=>{
       const col=KEL_COLORS[nm];
       L.rectangle(bounds,{color:col,weight:2.5,fillColor:col,fillOpacity:0.18,opacity:0.9})
-        .bindTooltip(`<span style="font-family:'Instrument Sans',sans-serif;font-size:11px;font-weight:600">${nm}</span>`,{sticky:true,className:'ll-tip'})
-        .bindPopup(`
-          <div style="font-family:'Instrument Sans',sans-serif;padding:2px">
-            <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:${col};margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #d8e2f0">${nm}</div>
-            <div style="font-size:11px;color:#3d5068;margin-bottom:3px">📍 Kec. Gondokusuman, Yogyakarta</div>
-            <div style="font-size:11px;color:#3d5068;margin-bottom:3px">📐 Luas: ${KEL_LUAS[nm]}</div>
-            <div style="font-size:11px;color:#3d5068">${KEL_KARAKTER[nm]||''}</div>
-          </div>
-        `)
+        .bindTooltip(`<span style="font-size:11px;font-weight:600">${nm}</span>`,{sticky:true,className:'ll-tip'})
+        .bindPopup(`<div style="font-family:'Instrument Sans',sans-serif;padding:2px"><div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:${col};margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #d8e2f0">${nm}</div><div style="font-size:11px;color:#3d5068;margin-bottom:3px">📍 Kec. Gondokusuman, Yogyakarta</div><div style="font-size:11px;color:#3d5068;margin-bottom:3px">📐 Luas: ${KEL_LUAS[nm]}</div><div style="font-size:11px;color:#3d5068">${KEL_KARAKTER[nm]||''}</div></div>`)
         .addTo(m);
     });
   }
 }
 
-// ═══════════════════════════════════════════════════
-// MAP CH3 — ZNT Choropleth dari znt.geojson
-//           + overlay batas kelurahan tipis
-// ═══════════════════════════════════════════════════
 async function buildMapCh3(){
-  const m=L.map('map-ch3',{
-    zoomControl:true,
-    scrollWheelZoom:false,
-    attributionControl:false
-  });
-
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    maxZoom:19,attribution:'© OpenStreetMap'
-  }).addTo(m);
-
+  const m=L.map('map-ch3',{zoomControl:true,scrollWheelZoom:false,attributionControl:false});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(m);
   m.fitBounds([[-7.796,110.371],[-7.767,110.398]]);
-
-  // Load ZNT GeoJSON
   let zntData=await fetchGJ('data/znt.geojson');
-  if(!zntData||!zntData.features||zntData.features.length===0){
-    zntData=ZNT_FALLBACK;
-  }
-
-  // Render ZNT layer
+  if(!zntData||!zntData.features||zntData.features.length===0) zntData=ZNT_FALLBACK;
   L.geoJSON(zntData,{
     style:f=>{
       const gc=f.properties.gridcode||4;
@@ -985,30 +1024,14 @@ async function buildMapCh3(){
     onEachFeature:(f,lyr)=>{
       const gc=f.properties.gridcode||4;
       const cfg=zntCfg(gc);
-      lyr.bindTooltip(
-        `<span style="font-family:'Instrument Sans',sans-serif;font-size:11px">
-          <b style="color:${cfg.fillColor}">ZNT — ${cfg.label}</b><br>
-          <span style="opacity:.85;font-size:10px">${cfg.range}</span>
-        </span>`,
-        {sticky:true,className:'ll-tip'}
-      );
-      lyr.bindPopup(`
-        <div style="font-family:'Instrument Sans',sans-serif;padding:2px">
-          <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:${cfg.fillColor};margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #d8e2f0">
-            Zona ${cfg.label}
-          </div>
-          <div style="font-size:11px;color:#3d5068;margin-bottom:3px">💰 ${cfg.range}</div>
-          ${f.properties.Shape_Area?`<div style="font-size:11px;color:#3d5068">📐 Luas: ${(f.properties.Shape_Area/10000).toFixed(3)} Ha</div>`:''}
-        </div>
-      `);
+      lyr.bindTooltip(`<span style="font-size:11px"><b style="color:${cfg.fillColor}">ZNT — ${cfg.label}</b><br><span style="opacity:.85;font-size:10px">${cfg.range}</span></span>`,{sticky:true,className:'ll-tip'});
+      lyr.bindPopup(`<div style="font-family:'Instrument Sans',sans-serif;padding:2px"><div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:${cfg.fillColor};margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #d8e2f0">Zona ${cfg.label}</div><div style="font-size:11px;color:#3d5068;margin-bottom:3px">💰 ${cfg.range}</div>${f.properties.Shape_Area?`<div style="font-size:11px;color:#3d5068">📐 Luas: ${(f.properties.Shape_Area/10000).toFixed(3)} Ha</div>`:''}</div>`);
       lyr.on('mouseover',function(){this.setStyle({fillOpacity:0.92,weight:2.5});});
       lyr.on('mouseout', function(){this.setStyle({fillOpacity:0.72,weight:1.5});});
     }
   }).addTo(m);
-
-  // Overlay batas kelurahan tipis (garis putus-putus) di atas ZNT
   const kecData=await fetchGJ('data/kecamatan.geojson');
-  if(kecData && kecData.features && kecData.features.length>0){
+  if(kecData&&kecData.features&&kecData.features.length>0){
     L.geoJSON(kecData,{
       style:f=>{
         const nm=f.properties.NAME_4||f.properties.NAMOBJ||f.properties.name||'';
@@ -1021,19 +1044,14 @@ async function buildMapCh3(){
       }
     }).addTo(m);
   } else {
-    // Fallback batas kelurahan
     Object.entries(KEL_BOUNDS_FALLBACK).forEach(([nm,bounds])=>{
-      const col=KEL_COLORS[nm];
-      L.rectangle(bounds,{color:col,weight:2,fill:false,opacity:0.75,dashArray:'5 4'})
-        .bindTooltip(nm,{sticky:true,className:'ll-tip'})
-        .addTo(m);
+      L.rectangle(bounds,{color:KEL_COLORS[nm],weight:2,fill:false,opacity:0.75,dashArray:'5 4'})
+        .bindTooltip(nm,{sticky:true,className:'ll-tip'}).addTo(m);
     });
   }
 }
 
-// ═══════════════════════════════════════════════════
-// NAVIGATION & PROGRESS BAR
-// ═══════════════════════════════════════════════════
+// NAV & PROGRESS
 const navLinks=document.querySelectorAll('.ch-link');
 function setActive(i){
   navLinks.forEach((l,j)=>l.classList.toggle('active',i===j));
@@ -1066,9 +1084,6 @@ function showSc(name,btn){
   document.getElementById('sc-'+name).classList.add('active');
 }
 
-// ═══════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════
 buildMapCh1();
 buildMapCh3();
 setActive(0);
