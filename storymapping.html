@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Storymapping Nilai Tanah — Kec. Gondokusuman</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#eef2f7;
+  --surface:#ffffff;
+  --surface2:#f4f7fb;
+  --border:#d8e2f0;
+  --border2:#b8c9e0;
+  --txt:#0f1923;
+  --txt2:#3d5068;
+  --txt3:#7a95b0;
+  --teal:#0a7c6e;
+  --teal-lt:#d0f0eb;
+  --blue:#1558a8;
+  --blue-lt:#d6e8ff;
+  --amber:#b05a00;
+  --amber-lt:#ffeacc;
+  --red:#b82828;
+  --red-lt:#fde0e0;
+  --purple:#5a30a0;
+  --purple-lt:#f0e8ff;
+  --green:#1a6e3a;
+  --green-lt:#d4f5e2;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden}
+
+/* ── HEADER ── */
+header{
+  position:sticky;top:0;z-index:9000;height:52px;
+  background:linear-gradient(135deg,#0f1923 0%,#1a2e45 60%,#0f2a3a 100%);
+  border-bottom:2px solid #0a3d62;
+  display:flex;align-items:center;padding:0 16px;gap:12px;
+  box-shadow:0 2px 12px rgba(0,0,0,.3);
+}
+header::before{
+  content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,#c83232,#e8a020,#28c080,#1558a8,#c83232);
+  background-size:300% 100%;animation:stripe 6s linear infinite;
+}
+@keyframes stripe{to{background-position:-300% 0}}
+header::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.015) 0px,rgba(255,255,255,.015) 1px,transparent 1px,transparent 8px);pointer-events:none}
+
+.logos{display:flex;align-items:center;gap:10px;flex-shrink:0;position:relative;z-index:1}
+.logo-img{height:30px;width:auto;object-fit:contain}
+.logo-sep{width:1px;height:22px;background:rgba(255,255,255,.2)}
+.h-mid{flex:1;padding:0 14px;position:relative;z-index:1}
+.h-title{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;color:#fff}
+.h-sub{font-size:9.5px;color:rgba(255,255,255,.45);margin-top:1px}
+.h-right{display:flex;align-items:center;gap:6px;flex-shrink:0;position:relative;z-index:1}
+.h-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;padding:3px 9px;border-radius:20px;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.55)}
+.h-nav{display:flex;gap:2px;margin-right:8px}
+.h-nav-link{font-size:10.5px;color:rgba(255,255,255,.6);padding:5px 11px;border-radius:5px;text-decoration:none;transition:all .2s;border:1px solid transparent;white-space:nowrap}
+.h-nav-link:hover{color:#fff;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15)}
+.h-nav-link.active{color:#2dd4a8;background:rgba(45,212,168,.12);border-color:rgba(45,212,168,.3)}
+
+/* ── CHAPTER NAV BAR ── */
+.ch-nav{
+  position:sticky;top:52px;z-index:8000;
+  background:var(--surface);border-bottom:1px solid var(--border2);
+  display:flex;align-items:stretch;padding:0 16px;height:44px;
+  box-shadow:0 2px 8px rgba(15,25,35,.08);
+}
+.ch-nav-brand{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--blue);margin-right:16px;display:flex;align-items:center;border-right:1px solid var(--border);padding-right:16px;white-space:nowrap}
+.ch-nav-links{display:flex;gap:0;overflow-x:auto;flex:1}
+.ch-nav-links::-webkit-scrollbar{display:none}
+.ch-link{
+  display:flex;align-items:center;gap:7px;padding:0 14px;height:44px;
+  font-size:11px;color:var(--txt3);text-decoration:none;white-space:nowrap;
+  border-bottom:2px solid transparent;transition:all .2s;cursor:pointer;
+}
+.ch-link:hover{color:var(--blue);background:var(--blue-lt)}
+.ch-link.active{color:var(--blue);border-bottom-color:var(--blue);font-weight:600}
+.ch-num{
+  width:18px;height:18px;border-radius:50%;border:1.5px solid currentColor;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:8px;flex-shrink:0;
+}
+.ch-nav-right{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--txt3);display:flex;align-items:center;border-left:1px solid var(--border);padding-left:14px;white-space:nowrap}
+
+/* ── SECTIONS ── */
+section{padding:64px 0 80px;min-height:100vh;display:flex;align-items:center}
+section:nth-child(odd){background:var(--bg)}
+section:nth-child(even){background:var(--surface2)}
+.container{max-width:1140px;margin:0 auto;padding:0 40px;width:100%}
+
+/* ── TYPOGRAPHY ── */
+.ch-label{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--blue);margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.ch-label::after{content:'';flex:1;max-width:60px;height:1px;background:var(--blue);opacity:.35}
+h1{font-family:'Syne',sans-serif;font-size:clamp(34px,4.5vw,54px);font-weight:800;line-height:1.12;margin-bottom:18px;color:var(--txt)}
+h2{font-family:'Syne',sans-serif;font-size:clamp(24px,3vw,36px);font-weight:700;line-height:1.2;margin-bottom:14px;color:var(--txt)}
+h3{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:9px;color:var(--txt)}
+.lead{font-size:14.5px;color:var(--txt2);line-height:1.8;max-width:580px;margin-bottom:24px}
+.body-text{font-size:13.5px;color:var(--txt2);line-height:1.85}
+.hl-blue{color:var(--blue)}
+.hl-teal{color:var(--teal)}
+.hl-amber{color:var(--amber)}
+.hl-red{color:var(--red)}
+.hl-purple{color:var(--purple)}
+
+/* ── LAYOUT GRIDS ── */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.five-col{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.four-col{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+/* ── STAT BLOCKS ── */
+.stat-row{display:flex;gap:16px;margin:24px 0;flex-wrap:wrap}
+.stat-block{
+  background:var(--surface);border:1px solid var(--border2);border-radius:10px;
+  padding:14px 18px;min-width:110px;border-top:3px solid var(--blue);
+}
+.stat-block.teal{border-top-color:var(--teal)}
+.stat-block.amber{border-top-color:var(--amber)}
+.stat-block.red{border-top-color:var(--red)}
+.stat-block .val{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--blue);line-height:1}
+.stat-block.teal .val{color:var(--teal)}
+.stat-block.amber .val{color:var(--amber)}
+.stat-block.red .val{color:var(--red)}
+.stat-block .lbl{font-size:10px;color:var(--txt3);margin-top:5px;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:20px 22px;transition:border-color .2s}
+.card:hover{border-color:var(--blue)}
+.card.accent-teal{border-top:3px solid var(--teal)}
+.card.accent-blue{border-top:3px solid var(--blue)}
+.card.accent-amber{border-top:3px solid var(--amber)}
+.card.accent-red{border-top:3px solid var(--red)}
+.card.accent-purple{border-top:3px solid var(--purple)}
+
+/* ── PILLS ── */
+.pill{display:inline-block;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:500;margin:2px}
+
+/* ── FACTOR BARS ── */
+.factor-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.factor-item:last-child{border-bottom:none}
+.factor-num{
+  width:34px;height:34px;border-radius:8px;background:var(--blue-lt);border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;color:var(--blue);flex-shrink:0;
+}
+.factor-info{flex:1}
+.factor-name{font-size:12.5px;font-weight:500;color:var(--txt);margin-bottom:3px}
+.factor-sub{font-size:11px;color:var(--txt3);margin-bottom:4px}
+.factor-bar-wrap{background:var(--border);border-radius:2px;height:5px;overflow:hidden}
+.factor-bar{height:100%;border-radius:2px}
+.factor-pct{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--blue);min-width:40px;text-align:right;font-weight:500}
+
+/* ── ZONA CARDS ── */
+.zona-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.zona-card{border-radius:10px;padding:16px 18px;border:1px solid}
+.zona-val{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;line-height:1}
+.zona-sub{font-size:11px;margin-top:4px;opacity:.8}
+.zona-luas{font-size:10px;font-family:'IBM Plex Mono',monospace;margin-top:8px;opacity:.75}
+
+/* ── TIMELINE ── */
+.timeline{position:relative;padding-left:28px}
+.timeline::before{content:'';position:absolute;left:8px;top:8px;bottom:8px;width:1.5px;background:var(--border2)}
+.tl-item{position:relative;margin-bottom:22px}
+.tl-item::before{content:'';position:absolute;left:-24px;top:5px;width:8px;height:8px;border-radius:50%;background:var(--blue);border:2px solid var(--bg)}
+.tl-title{font-size:13px;font-weight:600;color:var(--txt);margin-bottom:4px}
+.tl-body{font-size:12.5px;color:var(--txt2);line-height:1.7}
+
+/* ── SCENARIO TOGGLE ── */
+.sc-btns{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.sc-btn{
+  padding:7px 16px;border-radius:6px;font-size:11.5px;cursor:pointer;
+  border:1.5px solid var(--border2);background:var(--surface);color:var(--txt2);
+  font-family:'Instrument Sans',sans-serif;transition:all .2s;
+}
+.sc-btn:hover{border-color:var(--blue);color:var(--blue)}
+.sc-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:600}
+.sc-content{display:none}.sc-content.active{display:block}
+
+/* ── VALIDATION TABLE ── */
+.vtbl{width:100%;border-collapse:collapse;font-size:12px}
+.vtbl th{text-align:left;padding:8px 12px;color:var(--txt3);font-weight:500;border-bottom:2px solid var(--border2);font-size:10px;letter-spacing:.5px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;background:var(--surface2)}
+.vtbl td{padding:8px 12px;color:var(--txt);border-bottom:1px solid var(--border)}
+.vtbl tr:last-child td{border-bottom:none}
+.vtbl tr:hover td{background:var(--blue-lt)}
+
+/* ── REKOM CARDS ── */
+.rekom-card{
+  background:var(--surface);border:1px solid var(--border2);border-radius:10px;
+  padding:18px 20px;border-left:4px solid var(--blue);margin-bottom:12px;
+}
+.rekom-tag{display:inline-block;font-size:9px;font-family:'IBM Plex Mono',monospace;padding:2px 8px;border-radius:3px;margin-bottom:8px;letter-spacing:.5px}
+
+/* ── FORMULA BOX ── */
+.formula-box{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--txt);
+  line-height:2;background:var(--surface2);padding:16px 20px;border-radius:8px;
+  border:1px solid var(--border2);border-left:4px solid var(--blue);
+}
+
+/* ── AHP VALIDATION BOX ── */
+.ahp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ahp-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 16px}
+.ahp-lbl{font-size:10px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;margin-bottom:4px}
+.ahp-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;color:var(--blue)}
+.ahp-ok{background:var(--teal-lt);border:1px solid rgba(10,124,110,.3);border-radius:8px;padding:12px 16px;margin-top:12px;font-size:12px;color:var(--teal);line-height:1.6}
+
+/* ── DISTRIBUSI BARS ── */
+.dist-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.dist-lbl{font-size:11px;color:var(--txt2);width:90px;flex-shrink:0}
+.dist-bar-wrap{flex:1;background:var(--border);border-radius:3px;height:20px;overflow:hidden;position:relative}
+.dist-bar{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:8px;transition:width .6s ease}
+.dist-bar-txt{font-size:10px;font-weight:600;color:#fff;font-family:'IBM Plex Mono',monospace}
+.dist-pct{font-family:'IBM Plex Mono',monospace;font-size:11px;min-width:50px;text-align:right}
+
+/* ── COMPARISON GRID ── */
+.cmp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.cmp-card{border-radius:9px;padding:16px;border:1px solid var(--border2);background:var(--surface)}
+.cmp-ttl{font-size:10px;color:var(--txt3);font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;margin-bottom:10px;text-transform:uppercase}
+.cmp-val{font-size:12px;line-height:2.2;font-family:'IBM Plex Mono',monospace}
+
+/* ── KELURAHAN PROFILE TABLE ── */
+.kel-table{width:100%;border-collapse:collapse;font-size:12.5px}
+.kel-table th{text-align:left;padding:9px 12px;background:var(--blue);color:#fff;font-size:10px;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;text-transform:uppercase}
+.kel-table th:first-child{border-radius:8px 0 0 0}
+.kel-table th:last-child{border-radius:0 8px 0 0}
+.kel-table td{padding:9px 12px;border-bottom:1px solid var(--border);color:var(--txt2);vertical-align:middle}
+.kel-table tr:nth-child(even) td{background:var(--surface2)}
+.kel-table tr:hover td{background:var(--blue-lt)}
+.kel-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-family:'IBM Plex Mono',monospace;font-weight:500}
+
+/* ── PROGRESS INDICATOR ── */
+.progress-bar-section{
+  background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  padding:12px 40px;position:sticky;top:96px;z-index:7900;
+  display:flex;align-items:center;gap:0;
+  box-shadow:0 1px 4px rgba(15,25,35,.06);
+}
+.pb-item{display:flex;align-items:center;gap:8px;flex:1;justify-content:center;padding:0 8px}
+.pb-dot{width:22px;height:22px;border-radius:50%;background:var(--border2);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--txt3);flex-shrink:0;transition:all .3s}
+.pb-dot.done{background:var(--teal);color:#fff}
+.pb-dot.active{background:var(--blue);color:#fff;box-shadow:0 0 0 3px var(--blue-lt)}
+.pb-label{font-size:10px;color:var(--txt3);white-space:nowrap}
+.pb-label.active{color:var(--blue);font-weight:600}
+.pb-line{flex:1;height:1px;background:var(--border2);max-width:40px}
+.pb-line.done{background:var(--teal)}
+
+/* ── MAPS ── */
+#map-ch1,#map-ch3{height:380px;border-radius:12px;border:1px solid var(--border2);overflow:hidden;box-shadow:0 2px 12px rgba(15,25,35,.08)}
+
+/* ── WHY GONDOKUSUMAN ITEMS ── */
+.why-item{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.why-item:last-child{border-bottom:none}
+.why-num{width:28px;height:28px;border-radius:6px;background:var(--blue-lt);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--blue);flex-shrink:0;font-weight:600}
+.why-text{font-size:13px;color:var(--txt2);line-height:1.7;flex:1}
+.why-text strong{color:var(--txt);font-weight:600}
+
+/* ── PATTERN CARDS ── */
+.pattern-card{background:var(--surface);border:1px solid var(--border2);border-radius:10px;padding:16px 18px}
+.pattern-icon{font-size:22px;margin-bottom:8px}
+
+/* ── FOOTER ── */
+footer{background:linear-gradient(135deg,#0f1923 0%,#1a2e45 60%,#0f2a3a 100%);border-top:2px solid #0a3d62;padding:40px;text-align:center}
+.footer-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:#2dd4a8;margin-bottom:8px}
+.footer-sub{font-size:11.5px;color:rgba(255,255,255,.5);margin-top:4px}
+.footer-members{font-size:11px;color:rgba(255,255,255,.35);margin-top:8px}
+
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent)}
+
+@media(max-width:768px){
+  .two-col,.three-col,.four-col,.five-col,.zona-grid,.cmp-grid,.ahp-grid{grid-template-columns:1fr}
+  section{padding:48px 0 56px}
+  .container{padding:0 20px}
+  h1{font-size:30px}h2{font-size:22px}
+  .ch-nav-brand{display:none}
+  .progress-bar-section{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════ HEADER ═══════════════════════════════ -->
+<header>
+  <div class="logos">
+    <img src="logo/ITS.png" class="logo-img" alt="ITS"
+         onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'ITS',style:'font-family:Syne,sans-serif;font-weight:800;font-size:14px;color:#2dd4a8;position:relative;z-index:1'}))">
+    <div class="logo-sep"></div>
+    <img src="logo/GEOMATIKA.png" class="logo-img" alt="Geomatika"
+         onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'GEOMATIKA',style:'font-family:Syne,sans-serif;font-weight:700;font-size:10px;color:rgba(255,255,255,.7);position:relative;z-index:1'}))">
+  </div>
+  <div class="h-mid">
+    <div class="h-title">Storymapping Nilai Tanah — Kec. Gondokusuman</div>
+    <div class="h-sub">Dept. Teknik Geomatika ITS · Penilaian Tanah &amp; Properti 2026 · Kelompok 7</div>
+  </div>
+  <nav class="h-nav">
+    <a class="h-nav-link" href="tampilanawal.html">🏠 Home</a>
+    <a class="h-nav-link" href="webgis.html">🗺 WebGIS</a>
+    <a class="h-nav-link" href="dashboard.html">📊 Dashboard Analitik</a>
+    <a class="h-nav-link active" href="storymapping.html">📖 Storymapping</a>
+  </nav>
+  <div class="h-right">
+    <span class="h-tag">Kelompok 7</span>
+    <span class="h-tag">2026</span>
+  </div>
+</header>
+
+<!-- ═══════════════════════════════ CHAPTER NAV ═══════════════════════════════ -->
+<nav class="ch-nav" id="ch-nav">
+  <span class="ch-nav-brand">Nilai Tanah · Gondokusuman</span>
+  <div class="ch-nav-links">
+    <a class="ch-link active" href="#ch1" onclick="setActive(0)">
+      <span class="ch-num">01</span>Wilayah Studi
+    </a>
+    <a class="ch-link" href="#ch2" onclick="setActive(1)">
+      <span class="ch-num">02</span>Faktor Penentu
+    </a>
+    <a class="ch-link" href="#ch3" onclick="setActive(2)">
+      <span class="ch-num">03</span>Pola Spasial
+    </a>
+    <a class="ch-link" href="#ch4" onclick="setActive(3)">
+      <span class="ch-num">04</span>Analisis Skenario
+    </a>
+    <a class="ch-link" href="#ch5" onclick="setActive(4)">
+      <span class="ch-num">05</span>Rekomendasi
+    </a>
+  </div>
+  <div class="ch-nav-right">Kelompok 7 · ITS · 2026</div>
+</nav>
+
+<!-- ═══════════════════════════════ PROGRESS BAR ═══════════════════════════════ -->
+<div class="progress-bar-section" id="progress-bar">
+  <div class="pb-item">
+    <div class="pb-dot active" id="pd0">01</div>
+    <span class="pb-label active" id="pl0">Wilayah Studi</span>
+  </div>
+  <div class="pb-line" id="pline0"></div>
+  <div class="pb-item">
+    <div class="pb-dot" id="pd1">02</div>
+    <span class="pb-label" id="pl1">Faktor Penentu</span>
+  </div>
+  <div class="pb-line" id="pline1"></div>
+  <div class="pb-item">
+    <div class="pb-dot" id="pd2">03</div>
+    <span class="pb-label" id="pl2">Pola Spasial</span>
+  </div>
+  <div class="pb-line" id="pline2"></div>
+  <div class="pb-item">
+    <div class="pb-dot" id="pd3">04</div>
+    <span class="pb-label" id="pl3">Analisis Skenario</span>
+  </div>
+  <div class="pb-line" id="pline3"></div>
+  <div class="pb-item">
+    <div class="pb-dot" id="pd4">05</div>
+    <span class="pb-label" id="pl4">Rekomendasi</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CHAPTER 01 — MENGENAL GONDOKUSUMAN
+═══════════════════════════════════════════════════════════ -->
+<section id="ch1">
+  <div class="container">
+    <!-- HERO -->
+    <div class="two-col" style="margin-bottom:56px">
+      <div>
+        <div class="ch-label">Chapter 01</div>
+        <h1>Mengenal<br><span class="hl-blue">Gondokusuman</span></h1>
+        <!-- REVISI 1: rentang harga diperbarui dari data sampel final -->
+        <p class="lead">Kecamatan strategis di jantung Kota Yogyakarta — perpaduan kawasan heritage kolonial, permukiman padat, dan koridor komersial yang menciptakan variasi nilai tanah paling beragam di DIY, dari <span class="hl-red">Rp 5,6 juta</span> hingga <span class="hl-teal">Rp 56,8 juta</span> per m².</p>
+        <div class="stat-row">
+          <div class="stat-block"><div class="val">399</div><div class="lbl">Hektar luas</div></div>
+          <div class="stat-block teal"><div class="val">5</div><div class="lbl">Kelurahan</div></div>
+          <div class="stat-block amber"><div class="val">53rb+</div><div class="lbl">Jiwa</div></div>
+          <div class="stat-block red"><div class="val">16</div><div class="lbl">Titik sampel</div></div>
+        </div>
+        <p class="body-text" style="max-width:520px">
+          Gondokusuman diapit dua koridor arteri utama —
+          <strong class="hl-blue">Jalan Solo</strong> dan <strong class="hl-blue">Jalan Urip Sumoharjo</strong> —
+          yang menjadi motor penggerak nilai tanah di kawasan ini. Di dalamnya terdapat kawasan heritage
+          <strong class="hl-teal">Kotabaru</strong>, permukiman padat Baciro dan Klitren, serta zona akademik
+          Demangan yang berdekatan dengan UGM.
+        </p>
+        <div style="display:flex;gap:8px;margin-top:16px;flex-wrap:wrap">
+          <span class="pill" style="background:var(--teal-lt);color:var(--teal);border:1px solid rgba(10,124,110,.25)">Kotabaru — Heritage</span>
+          <span class="pill" style="background:var(--blue-lt);color:var(--blue);border:1px solid rgba(21,88,168,.25)">Demangan — Akademik</span>
+          <span class="pill" style="background:var(--purple-lt);color:var(--purple);border:1px solid rgba(90,48,160,.25)">Klitren — Padat</span>
+          <span class="pill" style="background:var(--amber-lt);color:var(--amber);border:1px solid rgba(176,90,0,.25)">Baciro — Permukiman</span>
+          <span class="pill" style="background:#f4f4f8;color:var(--txt3);border:1px solid var(--border2)">Terban — Transisi</span>
+        </div>
+      </div>
+      <div>
+        <div id="map-ch1"></div>
+      </div>
+    </div>
+
+    <!-- PROFIL KELURAHAN TABLE -->
+    <div style="margin-bottom:40px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:14px">PROFIL LIMA KELURAHAN</div>
+      <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border2);box-shadow:0 2px 8px rgba(15,25,35,.06)">
+        <table class="kel-table">
+          <thead>
+            <tr>
+              <th>Kelurahan</th>
+              <th>Luas (Ha)</th>
+              <th>Kepadatan (jiwa/km²)</th>
+              <th>Karakter Utama</th>
+              <th>Zona Nilai Tanah</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong style="color:var(--teal)">Kotabaru</strong></td>
+              <td style="font-family:'IBM Plex Mono',monospace">89,4</td>
+              <td style="font-family:'IBM Plex Mono',monospace">4.358 <span style="color:var(--txt3);font-size:10px">(terendah)</span></td>
+              <td>Heritage kolonial Belanda, kantor, institusi pendidikan tinggi, ruang terbuka bersejarah</td>
+              <td><span class="kel-badge" style="background:var(--teal-lt);color:var(--teal)">Sangat Tinggi</span></td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--purple)">Klitren</strong></td>
+              <td style="font-family:'IBM Plex Mono',monospace">64,8</td>
+              <td style="font-family:'IBM Plex Mono',monospace">13.930 <span style="color:var(--red);font-size:10px">(tertinggi)</span></td>
+              <td>Permukiman padat dengan gang-gang sempit khas urban Yogyakarta, tekanan lahan sangat tinggi</td>
+              <td><span class="kel-badge" style="background:var(--blue-lt);color:var(--blue)">Tinggi</span></td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--amber)">Baciro</strong></td>
+              <td style="font-family:'IBM Plex Mono',monospace">112,6 <span style="color:var(--teal);font-size:10px">(terluas)</span></td>
+              <td style="font-family:'IBM Plex Mono',monospace">11.935</td>
+              <td>Sangat beragam — utara dekat pusat kota bernilai tinggi, selatan dan timur aksesibilitas terbatas</td>
+              <td><span class="kel-badge" style="background:var(--amber-lt);color:var(--amber)">Tinggi – Rendah</span></td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--blue)">Demangan</strong></td>
+              <td style="font-family:'IBM Plex Mono',monospace">77,2</td>
+              <td style="font-family:'IBM Plex Mono',monospace">11.552</td>
+              <td>Zona transisi antara kawasan komersial premium dan permukiman. Dekat UGM dan koridor Kaliurang</td>
+              <td><span class="kel-badge" style="background:var(--blue-lt);color:var(--blue)">Tinggi</span></td>
+            </tr>
+            <tr>
+              <td><strong style="color:var(--txt2)">Terban</strong></td>
+              <td style="font-family:'IBM Plex Mono',monospace">55,2</td>
+              <td style="font-family:'IBM Plex Mono',monospace">11.763</td>
+              <td>Zona transisi unik — berbatasan koridor komersial utama namun pinggiran timur sangat rendah</td>
+              <td><span class="kel-badge" style="background:#f4f4f8;color:var(--txt3);border:1px solid var(--border2)">Tinggi – Sangat Rendah</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- MENGAPA GONDOKUSUMAN -->
+    <div class="card" style="margin-top:8px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:14px">MENGAPA GONDOKUSUMAN?</div>
+      <div class="why-item">
+        <div class="why-num">01</div>
+        <!-- REVISI 2: rentang harga poin 01 diperbarui -->
+        <div class="why-text"><strong>Variasi nilai tanah paling lebar:</strong> Rentang Rp 5,6 juta/m² hingga Rp 56,8 juta/m² memberikan rentang analisis yang bermakna secara ilmiah, mencerminkan gradien aksesibilitas dan fasilitas yang nyata.</div>
+      </div>
+      <div class="why-item">
+        <div class="why-num">02</div>
+        <div class="why-text"><strong>Ketersediaan data spasial lengkap:</strong> INA-Geoportal, BPS Kota Yogyakarta, dan BHUMI ATR/BPN menyediakan data multi-kriteria yang memungkinkan analisis komprehensif tanpa keterbatasan data.</div>
+      </div>
+      <div class="why-item">
+        <div class="why-num">03</div>
+        <div class="why-text"><strong>Keragaman fungsi lahan dalam satu wilayah kompak:</strong> Permukiman, komersial, pendidikan, kesehatan, dan heritage dalam ±399 Ha menjadikannya laboratorium perencanaan kota yang ideal.</div>
+      </div>
+      <div class="why-item">
+        <div class="why-num">04</div>
+        <div class="why-text"><strong>Skala analisis yang realistis:</strong> Luas ±399 Ha ideal untuk analisis buffer radius lokal (50–900 m) namun tetap menampilkan variasi spasial yang bermakna dan dapat diinterpretasikan.</div>
+      </div>
+      <div class="why-item">
+        <div class="why-num">05</div>
+        <div class="why-text"><strong>Relevansi kebijakan langsung:</strong> Gondokusuman aktif mengalami transformasi penggunaan lahan dari hunian ke komersial/jasa, sehingga pemodelan ini dapat mendukung pembaruan NJOP dan perencanaan RDTR yang lebih akurat.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CHAPTER 02 — FAKTOR PENENTU NILAI TANAH
+═══════════════════════════════════════════════════════════ -->
+<section id="ch2">
+  <div class="container">
+    <div class="ch-label">Chapter 02</div>
+    <h2>Faktor Penentu<br><span class="hl-blue">Nilai Tanah</span></h2>
+    <p class="lead">Tujuh variabel lokasi dianalisis dan dibobot menggunakan metode Analytical Hierarchy Process (AHP). Di balik angka Rp 56,8 juta/m² di Jalan Kotabaru atau Rp 5,6 juta/m² di pinggiran Baciro, terdapat logika spasial yang terukur dan dapat dimodelkan.</p>
+
+    <div class="two-col" style="align-items:start;gap:40px">
+      <!-- FACTOR BARS -->
+      <div class="card">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:16px">7 VARIABEL PENENTU + BOBOT AHP</div>
+        <div class="factor-item">
+          <div class="factor-num">01</div>
+          <div class="factor-info">
+            <div class="factor-name">Aksesibilitas Jalan Utama</div>
+            <div class="factor-sub">Buffer: 0–50 m (skor 1) · 50–100 m (skor 3) · 100–150 m (skor 5)</div>
+            <div class="factor-bar-wrap"><div class="factor-bar" style="width:100%;background:#1558a8"></div></div>
+          </div>
+          <div class="factor-pct">34,44%</div>
+        </div>
+        <div class="factor-item">
+          <div class="factor-num">02</div>
+          <div class="factor-info">
+            <div class="factor-name">Kepadatan Penduduk (Demografi)</div>
+            <div class="factor-sub">Data BPS per kelurahan — mencerminkan tekanan permintaan lahan (bid-rent Alonso 1964)</div>
+            <div class="factor-bar-wrap"><div class="factor-bar" style="width:67%;background:#0a7c6e"></div></div>
+          </div>
+          <div class="factor-pct">23,17%</div>
+        </div>
+        <div class="factor-item">
+          <div class="factor-num">03</div>
+          <div class="factor-info">
+            <div class="factor-name">Fasilitas Kesehatan (Rumah Sakit)</div>
+            <div class="factor-sub">Buffer: 0–200 m (skor 1) · 200–400 m (skor 3) · 400–600 m (skor 5)</div>
+            <div class="factor-bar-wrap"><div class="factor-bar" style="width:44%;background:#5a30a0"></div></div>
+          </div>
+          <div class="factor-pct">15,29%</div>
+        </div>
+        <div class="factor-item">
+          <div class="factor-num">04</div>
+          <div class="factor-info">
+            <div class="factor-name">Fasilitas Pendidikan</div>
+            <div class="factor-sub">Buffer: 0–150 m (skor 1) · 150–300 m (skor 3) · 300–450 m (skor 5) · Gibbons &amp; Machin (2003)</div>
+            <div class="factor-bar-wrap"><div class="factor-bar" style="width:32%;background:#1558a8"></div></div>
+          </div>
+          <div class="factor-pct">11,14%</div>
+        </div>
+        <div class="factor-item">
+          <div class="factor-num">05</div>
+          <div class="factor-info">
+            <div class="factor-name">Sarana Ibadah</div>
+            <div class="factor-sub">Buffer: 0–150 m · 150–300 m · 300–450 m — pusat komunitas, kohesi sosial</div>
+            <div class="factor-bar-wrap"><div class="factor-bar" style="width:22%;background:#b05a00"></div></div>
+          </div>
+          <div class="factor-pct">7,48%</div>
+        </div>
+        <div class="factor-item">
+          <div class="factor-num">06</div>
+          <div class="factor-info">
+            <div class="factor-name">Kantor Pemerintahan</div>
+            <div class="factor-sub">Buffer: 0–200 m · 200–400 m · 400–600 m — aksesibilitas layanan publik</div>
+            <div class="factor-bar-wrap"><div class="factor-bar" style="width:16%;background:#5a30a0"></div></div>
+          </div>
+          <div class="factor-pct">5,57%</div>
+        </div>
+        <div class="factor-item">
+          <div class="factor-num">07</div>
+          <div class="factor-info">
+            <div class="factor-name">Kantor Pos</div>
+            <div class="factor-sub">Buffer: 0–300 m · 300–600 m · 600–900 m — indikator kelengkapan layanan publik</div>
+            <div class="factor-bar-wrap"><div class="factor-bar" style="width:8%;background:#0a7c6e"></div></div>
+          </div>
+          <div class="factor-pct">2,90%</div>
+        </div>
+      </div>
+
+      <!-- AHP VALIDATION + FORMULA -->
+      <div>
+        <div class="card" style="margin-bottom:16px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:14px">VALIDASI MODEL AHP (Saaty 1–9)</div>
+          <div class="ahp-grid">
+            <div class="ahp-item">
+              <div class="ahp-lbl">Eigen Maksimum (λmax)</div>
+              <div class="ahp-val">7,3037</div>
+            </div>
+            <div class="ahp-item">
+              <div class="ahp-lbl">Consistency Index (CI)</div>
+              <div class="ahp-val" style="color:var(--teal)">0,0506</div>
+            </div>
+            <div class="ahp-item">
+              <div class="ahp-lbl">Random Index (RI)</div>
+              <div class="ahp-val" style="color:var(--txt2)">1,320</div>
+            </div>
+            <div class="ahp-item">
+              <div class="ahp-lbl">Consistency Ratio (CR)</div>
+              <div class="ahp-val" style="color:var(--teal)">0,038</div>
+            </div>
+          </div>
+          <div class="ahp-ok">
+            ✓ CR = 0,038 &lt; 0,10 → Matriks perbandingan <strong>konsisten secara internal</strong> dan valid untuk digunakan dalam Weighted Overlay. Konsisten dengan temuan Ruiz et al. (2020) yang menempatkan road proximity sebagai faktor dominan (35,1%).
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:12px">FORMULA WEIGHTED OVERLAY</div>
+          <div class="formula-box">
+            NZT = (0,3444 × Jalan)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ (0,2317 × Demografi)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ (0,1529 × RS)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ (0,1114 × Pendidikan)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ (0,0748 × Sarana Ibadah)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ (0,0557 × Pemerintahan)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ (0,0290 × KantorPos)
+          </div>
+          <div style="margin-top:12px;font-size:12px;color:var(--txt3);line-height:1.7">
+            Skor 1 = kondisi terbaik → nilai tanah <strong style="color:var(--teal)">tertinggi</strong><br>
+            Skor 5 = kondisi terburuk → nilai tanah <strong style="color:var(--red)">terendah</strong><br>
+            Klasifikasi zona menggunakan Natural Breaks (Jenks).
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CHAPTER 03 — POLA SPASIAL ZONA NILAI TANAH
+═══════════════════════════════════════════════════════════ -->
+<section id="ch3">
+  <div class="container">
+    <div class="ch-label">Chapter 03</div>
+    <h2>Pola Spasial<br><span class="hl-blue">Zona Nilai Tanah</span></h2>
+    <p class="lead">Hasil Weighted Overlay diklasifikasikan dengan Natural Breaks (Jenks) menjadi 4 zona, membentuk gradien nilai tanah yang menurun dari pusat ke pinggiran — konsisten dengan teori bid-rent Alonso (1964).</p>
+
+    <div class="two-col" style="align-items:start;gap:40px;margin-bottom:40px">
+      <div>
+        <div id="map-ch3"></div>
+        <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+          <span class="pill" style="background:var(--teal-lt);color:var(--teal);border:1px solid rgba(10,124,110,.3)">Sangat Tinggi &gt;Rp 20 jt/m²</span>
+          <span class="pill" style="background:var(--blue-lt);color:var(--blue);border:1px solid rgba(21,88,168,.3)">Tinggi Rp 10–20 jt/m²</span>
+          <span class="pill" style="background:var(--amber-lt);color:var(--amber);border:1px solid rgba(176,90,0,.3)">Rendah Rp 5–10 jt/m²</span>
+          <span class="pill" style="background:var(--red-lt);color:var(--red);border:1px solid rgba(184,40,40,.3)">Sangat Rendah &lt;Rp 5 jt/m²</span>
+        </div>
+      </div>
+
+      <div>
+        <!-- ZONA GRID -->
+        <div class="zona-grid" style="margin-bottom:16px">
+          <div class="zona-card" style="background:var(--teal-lt);border-color:rgba(10,124,110,.3)">
+            <div style="font-size:10px;font-weight:600;letter-spacing:.5px;color:var(--teal);margin-bottom:6px">SANGAT TINGGI</div>
+            <div class="zona-val" style="color:var(--teal)">9,52</div>
+            <div class="zona-sub" style="color:var(--teal)">hektar</div>
+            <!-- REVISI 3: validasi pasar zona Sangat Tinggi — 6 titik, rentang Rp 21,5–56,8 jt -->
+            <div class="zona-luas" style="color:var(--teal)">2,80% wilayah<br>Koridor Jl. Solo &amp; Urip Sumoharjo<br>Validasi pasar: Rp 21,5–56,8 jt/m² (6 titik)</div>
+          </div>
+          <div class="zona-card" style="background:var(--blue-lt);border-color:rgba(21,88,168,.3)">
+            <div style="font-size:10px;font-weight:600;letter-spacing:.5px;color:var(--blue);margin-bottom:6px">TINGGI</div>
+            <div class="zona-val" style="color:var(--blue)">202,65</div>
+            <div class="zona-sub" style="color:var(--blue)">hektar</div>
+            <!-- REVISI 4: validasi pasar zona Tinggi — 6 titik, rentang Rp 10,0–15,3 jt -->
+            <div class="zona-luas" style="color:var(--blue)">59,57% wilayah<br>Kotabaru, Demangan, Klitren<br>Validasi pasar: Rp 10,0–15,3 jt/m² (6 titik)</div>
+          </div>
+          <div class="zona-card" style="background:var(--amber-lt);border-color:rgba(176,90,0,.3)">
+            <div style="font-size:10px;font-weight:600;letter-spacing:.5px;color:var(--amber);margin-bottom:6px">RENDAH</div>
+            <div class="zona-val" style="color:var(--amber)">119,77</div>
+            <div class="zona-sub" style="color:var(--amber)">hektar</div>
+            <div class="zona-luas" style="color:var(--amber)">35,21% wilayah<br>Baciro selatan–timur, sebagian Terban<br>Validasi pasar: Rp 5,6–9,8 jt/m² (4 titik)</div>
+          </div>
+          <div class="zona-card" style="background:var(--red-lt);border-color:rgba(184,40,40,.3)">
+            <div style="font-size:10px;font-weight:600;letter-spacing:.5px;color:var(--red);margin-bottom:6px">SANGAT RENDAH</div>
+            <div class="zona-val" style="color:var(--red)">8,24</div>
+            <div class="zona-sub" style="color:var(--red)">hektar</div>
+            <!-- REVISI 5: zona Sangat Rendah — tidak ada sampel di bawah Rp 5 jt -->
+            <div class="zona-luas" style="color:var(--red)">2,42% wilayah<br>Pinggiran timur Terban, ujung Baciro<br>Tidak ada sampel ≤ Rp 5 jt/m²; titik terendah Rp 5,6 jt/m²</div>
+          </div>
+        </div>
+        <!-- REVISI 9: catatan note box dengan jumlah titik per zona -->
+        <div style="font-size:11px;color:var(--txt3);padding:10px 12px;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
+          Total teranalisis: <strong style="color:var(--txt)">340,18 Ha</strong> dari 399,2 Ha. Selisih ~59 Ha adalah area NoData di batas administrasi ujung wilayah. Validasi lapangan: <strong style="color:var(--txt)">6 titik Sangat Tinggi &middot; 6 titik Tinggi &middot; 4 titik Rendah &middot; 0 titik Sangat Rendah</strong>.
+        </div>
+      </div>
+    </div>
+
+    <!-- TABEL VALIDASI -->
+    <div style="margin-bottom:32px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:12px">VALIDASI MODEL vs ZNT BPN vs HARGA PASAR AKTUAL</div>
+      <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border2);box-shadow:0 2px 8px rgba(15,25,35,.06)">
+        <table class="vtbl">
+          <thead>
+            <tr>
+              <th>Zona Model</th>
+              <th>Rentang ZNT BPN</th>
+              <th>Harga Pasar Aktual</th>
+              <th>Jumlah Sampel</th>
+              <th>Selisih Gap</th>
+              <th>Keterangan</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="kel-badge" style="background:var(--teal-lt);color:var(--teal)">Sangat Tinggi</span></td>
+              <td style="font-family:'IBM Plex Mono',monospace">&gt; Rp 20 jt/m²</td>
+              <!-- REVISI 6: rentang harga pasar Sangat Tinggi diperbarui -->
+              <td style="font-family:'IBM Plex Mono',monospace;color:var(--teal);font-weight:600">Rp 21,5–56,8 jt/m²</td>
+              <td style="font-family:'IBM Plex Mono',monospace;color:var(--teal)">6 titik</td>
+              <td><span class="kel-badge" style="background:var(--red-lt);color:var(--red)">Harga pasar jauh lebih tinggi</span></td>
+              <td style="font-size:11px;color:var(--txt3)">NJOP perlu diperbarui</td>
+            </tr>
+            <tr>
+              <td><span class="kel-badge" style="background:var(--blue-lt);color:var(--blue)">Tinggi</span></td>
+              <td style="font-family:'IBM Plex Mono',monospace">Rp 10–20 jt/m²</td>
+              <!-- REVISI 7: rentang harga pasar Tinggi diperbarui -->
+              <td style="font-family:'IBM Plex Mono',monospace;color:var(--blue);font-weight:600">Rp 10,0–15,3 jt/m²</td>
+              <td style="font-family:'IBM Plex Mono',monospace;color:var(--blue)">6 titik</td>
+              <td><span class="kel-badge" style="background:var(--teal-lt);color:var(--teal)">Kesesuaian baik</span></td>
+              <td style="font-size:11px;color:var(--txt3)">Model akurat</td>
+            </tr>
+            <tr>
+              <td><span class="kel-badge" style="background:var(--amber-lt);color:var(--amber)">Rendah</span></td>
+              <td style="font-family:'IBM Plex Mono',monospace">Rp 5–10 jt/m²</td>
+              <td style="font-family:'IBM Plex Mono',monospace;color:var(--amber);font-weight:600">Rp 5,6–9,8 jt/m²</td>
+              <td style="font-family:'IBM Plex Mono',monospace;color:var(--amber)">4 titik</td>
+              <td><span class="kel-badge" style="background:var(--amber-lt);color:var(--amber)">Cukup sesuai</span></td>
+              <td style="font-size:11px;color:var(--txt3)">BPN lebih tinggi dari pasar</td>
+            </tr>
+            <tr>
+              <td><span class="kel-badge" style="background:var(--red-lt);color:var(--red)">Sangat Rendah</span></td>
+              <td style="font-family:'IBM Plex Mono',monospace">&lt; Rp 5 jt/m²</td>
+              <!-- REVISI 8: zona Sangat Rendah — tidak ada sampel -->
+              <td style="font-family:'IBM Plex Mono',monospace;color:var(--red);font-weight:600">— (tidak ada sampel)</td>
+              <td style="font-family:'IBM Plex Mono',monospace;color:var(--txt3)">0 titik</td>
+              <td><span class="kel-badge" style="background:var(--blue-lt);color:var(--blue)">Zona model teridentifikasi</span></td>
+              <td style="font-size:11px;color:var(--txt3)">Seluruh sampel ≥ Rp 5,6 jt/m²</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="font-size:11.5px;color:var(--txt3);margin-top:8px;padding:10px 12px;background:var(--surface2);border-radius:6px;border:1px solid var(--border)">
+        <strong style="color:var(--txt2)">Catatan:</strong> Perbedaan antara ZNT dan harga pasar adalah wajar — ZNT merupakan estimasi administratif untuk perpajakan, sementara harga pasar dipengaruhi kondisi spesifik lokasi, negosiasi, dan dinamika permintaan real-time. Zona Sangat Rendah secara spasial teridentifikasi oleh model, namun tidak ditemukan satupun transaksi pasar di bawah Rp 5 juta/m² dari 16 titik sampel — mengindikasikan bahwa seluruh wilayah Gondokusuman masih berada di atas ambang batas ini sebagai kecamatan urban inti Kota Yogyakarta.
+      </div>
+    </div>
+
+    <!-- TIGA POLA SPASIAL -->
+    <div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:14px">TIGA POLA DISTRIBUSI SPASIAL</div>
+      <div class="three-col">
+        <div class="pattern-card accent-teal" style="border-top:3px solid var(--teal)">
+          <div style="font-size:20px;margin-bottom:10px">🔵</div>
+          <h3 style="color:var(--teal);font-size:14px;margin-bottom:8px">Pola Clustered (Mengelompok)</h3>
+          <div class="body-text">Zona Sangat Tinggi dan Tinggi mengelompok di bagian barat-tengah wilayah (Kotabaru–Demangan). Hasil overlap positif <em>simultan</em> dari semua variabel: ring 1 buffer jalan, ring 1 buffer RS, ring 1 buffer pendidikan, dan demografi mendukung.</div>
+        </div>
+        <div class="pattern-card accent-blue" style="border-top:3px solid var(--blue)">
+          <div style="font-size:20px;margin-bottom:10px">📉</div>
+          <h3 style="color:var(--blue);font-size:14px;margin-bottom:8px">Pola Gradien (Menurun)</h3>
+          <div class="body-text">Dari pusat Kotabaru ke arah timur dan selatan, nilai tanah menurun secara gradual. Klitren dan Baciro tengah menunjukkan pola semi-clustered di kategori Tinggi hingga Rendah, seiring melemahnya cakupan buffer fasilitas.</div>
+        </div>
+        <div class="pattern-card accent-amber" style="border-top:3px solid var(--amber)">
+          <div style="font-size:20px;margin-bottom:10px">🔴</div>
+          <h3 style="color:var(--amber);font-size:14px;margin-bottom:8px">Pola Dispersed (Menyebar)</h3>
+          <div class="body-text">Di bagian timur Klitren dan selatan Baciro, distribusi nilai tanah menyebar tanpa klaster jelas, didominasi zona Rendah dan Sangat Rendah. Hanya 1–2 variabel yang memberikan skor positif di area ini.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CHAPTER 04 — ANALISIS SKENARIO
+═══════════════════════════════════════════════════════════ -->
+<section id="ch4">
+  <div class="container">
+    <div class="ch-label">Chapter 04</div>
+    <h2>Analisis Skenario:<br><span class="hl-blue">Bagaimana Jika...?</span></h2>
+    <p class="lead">Model GIS-AHP bukan sekadar potret kondisi saat ini. Kekuatan sesungguhnya terletak pada kemampuan mensimulasikan dampak perubahan infrastruktur terhadap distribusi nilai tanah.</p>
+
+    <div class="sc-btns" style="margin-top:8px">
+      <button class="sc-btn active" onclick="showSc('baseline',this)">Kondisi Saat Ini (Baseline)</button>
+      <button class="sc-btn" onclick="showSc('rs',this)">Skenario A: RS Baru di Baciro</button>
+      <button class="sc-btn" onclick="showSc('jalan',this)">Skenario B: Jalan Arteri Timur</button>
+      <button class="sc-btn" onclick="showSc('kombi',this)">Skenario C: Kombinasi A+B</button>
+    </div>
+
+    <!-- BASELINE -->
+    <div class="sc-content active" id="sc-baseline">
+      <div class="two-col" style="align-items:start;gap:40px">
+        <div class="card">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:16px">DISTRIBUSI ZONA SAAT INI</div>
+          <div class="dist-row">
+            <span class="dist-lbl">Sangat Tinggi</span>
+            <div class="dist-bar-wrap">
+              <div class="dist-bar" style="width:2.8%;background:var(--teal)">
+                <span class="dist-bar-txt" style="display:none">2,8%</span>
+              </div>
+            </div>
+            <span class="dist-pct" style="color:var(--teal)">2,80% · 9,52 Ha</span>
+          </div>
+          <div class="dist-row">
+            <span class="dist-lbl">Tinggi</span>
+            <div class="dist-bar-wrap">
+              <div class="dist-bar" style="width:59.57%;background:var(--blue)">
+                <span class="dist-bar-txt">59,6%</span>
+              </div>
+            </div>
+            <span class="dist-pct" style="color:var(--blue)">59,57% · 202,65 Ha</span>
+          </div>
+          <div class="dist-row">
+            <span class="dist-lbl">Rendah</span>
+            <div class="dist-bar-wrap">
+              <div class="dist-bar" style="width:35.21%;background:var(--amber)">
+                <span class="dist-bar-txt">35,2%</span>
+              </div>
+            </div>
+            <span class="dist-pct" style="color:var(--amber)">35,21% · 119,77 Ha</span>
+          </div>
+          <div class="dist-row">
+            <span class="dist-lbl">Sangat Rendah</span>
+            <div class="dist-bar-wrap">
+              <div class="dist-bar" style="width:2.42%;background:var(--red)">
+                <span class="dist-bar-txt" style="display:none">2,4%</span>
+              </div>
+            </div>
+            <span class="dist-pct" style="color:var(--red)">2,42% · 8,24 Ha</span>
+          </div>
+          <div style="margin-top:16px;padding:12px;background:var(--surface2);border-radius:8px;border:1px solid var(--border);font-size:12.5px;color:var(--txt2);line-height:1.7">
+            COD (Coefficient of Dispersion) = <strong style="color:var(--amber)">24,3%</strong> — moderat, mencerminkan variasi nilai tanah yang signifikan namun masih dalam rentang yang dapat dimodelkan (IAAO: 15–25% = moderat).
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:14px">VALIDASI vs DATA LAPANGAN (16 TITIK SAMPEL)</div>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-title" style="color:var(--teal)">Jl. Kotabaru (sampel 16): Rp 56,8 jt/m² — Zona Sangat Tinggi</div>
+              <div class="tl-body">Titik tertinggi — koridor Jalan utama Kotabaru. Skor aksesibilitas terbaik. 6 titik sampel terkonfirmasi di zona Sangat Tinggi (Rp 21,5–56,8 jt/m²).</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-title" style="color:var(--blue)">Koridor Demangan (sampel 9-10): Rp 12,4–12,5 jt/m²</div>
+              <div class="tl-body">Zona Tinggi terkonfirmasi. 6 titik sampel di zona ini (Rp 10,0–15,3 jt/m²). Aksesibilitas baik, dekat fasilitas pendidikan dan kesehatan.</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-title" style="color:var(--amber)">Klitren (sampel 13): Rp 10,0 jt/m²</div>
+              <div class="tl-body">Batas bawah zona Tinggi (Rp 10,0 jt/m², tepat di threshold &gt; Rp 10 jt). Kepadatan tertinggi mendorong nilai, namun jarak ke jalan utama membatasi.</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-title" style="color:var(--red)">Baciro timur (sampel 11-12): Rp 5,6–6,9 jt/m²</div>
+              <div class="tl-body">Zona Rendah — titik terendah dari 16 sampel. Di luar radius optimal semua buffer fasilitas. Tidak ada sampel yang turun ke bawah Rp 5 jt/m² di seluruh wilayah Gondokusuman.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKENARIO A: RS BARU -->
+    <div class="sc-content" id="sc-rs">
+      <div class="two-col" style="align-items:start;gap:40px">
+        <div class="card">
+          <div style="padding:12px 14px;background:var(--purple-lt);border-radius:8px;border:1px solid rgba(90,48,160,.25);margin-bottom:16px">
+            <div style="font-size:12px;color:var(--purple);font-weight:600;margin-bottom:4px">Asumsi: RS Tipe C di Baciro tengah (~-7.790, 110.385)</div>
+            <div style="font-size:11.5px;color:var(--txt2)">Variabel fasilitas kesehatan (bobot 15,29%) yang saat ini skor buruk untuk Baciro akan berubah drastis. Area 0–200 m → skor 1, 200–600 m → skor 3.</div>
+          </div>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-title" style="color:var(--teal)">Radius 0–200 m: Dampak langsung</div>
+              <div class="tl-body">Kenaikan nilai tanah +15–25%. Potensi naik 1–2 kelas zona. Sekitar <strong>8–12 Ha</strong> terdampak langsung. Area Zona Sangat Rendah di sekitar RS berpotensi hilang sepenuhnya.</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-title" style="color:var(--blue)">Radius 200–600 m: Dampak moderat</div>
+              <div class="tl-body">Kenaikan +8–12%. Sekitar <strong>20–30 Ha</strong> berpotensi naik kelas dari Rendah ke Tinggi. Proporsi zona Tinggi di Baciro naik dari ~37% menjadi ~52%.</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-title" style="color:var(--amber)">Return on Investment tertinggi</div>
+              <div class="tl-body">Pembangunan RS baru di Baciro adalah investasi dengan <strong>multiplier effect terbesar per rupiah</strong>, karena mengangkat nilai tanah kawasan yang saat ini paling tertinggal.</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:16px">PROYEKSI PERUBAHAN DISTRIBUSI</div>
+          <div style="font-size:10px;color:var(--txt3);margin-bottom:10px">Sebelum (pudar) → Setelah Skenario A (solid)</div>
+          <div class="dist-row">
+            <span class="dist-lbl">Sangat Tinggi</span>
+            <div class="dist-bar-wrap">
+              <div class="dist-bar" style="width:2.8%;background:rgba(10,124,110,.3)"></div>
+              <div class="dist-bar" style="width:0.7%;background:var(--teal);margin-top:-20px"></div>
+            </div>
+            <span class="dist-pct" style="color:var(--teal)">2,8% → <strong>3,5%</strong></span>
+          </div>
+          <div class="dist-row">
+            <span class="dist-lbl">Tinggi</span>
+            <div class="dist-bar-wrap">
+              <div class="dist-bar" style="width:65%;background:var(--blue)"><span class="dist-bar-txt">65%</span></div>
+            </div>
+            <span class="dist-pct" style="color:var(--blue)">59,6% → <strong>65,0%</strong></span>
+          </div>
+          <div class="dist-row">
+            <span class="dist-lbl">Rendah</span>
+            <div class="dist-bar-wrap">
+              <div class="dist-bar" style="width:29%;background:var(--amber)"><span class="dist-bar-txt">29%</span></div>
+            </div>
+            <span class="dist-pct" style="color:var(--amber)">35,2% → <strong>29,0%</strong></span>
+          </div>
+          <div class="dist-row">
+            <span class="dist-lbl">Sangat Rendah</span>
+            <div class="dist-bar-wrap">
+              <div class="dist-bar" style="width:2.5%;background:var(--red)"></div>
+            </div>
+            <span class="dist-pct" style="color:var(--red)">2,4% → <strong>2,5%</strong></span>
+          </div>
+          <div style="margin-top:14px;padding:12px;background:var(--teal-lt);border-radius:8px;border:1px solid rgba(10,124,110,.2);font-size:12.5px;color:var(--teal)">
+            Rata-rata peningkatan nilai tanah di wilayah Baciro: <strong>+8–12%</strong> dari kondisi baseline.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKENARIO B: JALAN BARU -->
+    <div class="sc-content" id="sc-jalan">
+      <div class="two-col" style="align-items:start;gap:40px">
+        <div class="card">
+          <div style="padding:12px 14px;background:var(--amber-lt);border-radius:8px;border:1px solid rgba(176,90,0,.25);margin-bottom:16px">
+            <div style="font-size:12px;color:var(--amber);font-weight:600;margin-bottom:4px">Asumsi: Jalan arteri baru ±1,2 km di koridor timur Klitren–Terban</div>
+            <div style="font-size:11.5px;color:var(--txt2)">Lebar 12 m, menghubungkan Jl. Colombo–Jl. Kenari. Variabel aksesibilitas (bobot <strong>34,44%</strong> — paling dominan) berubah sepenuhnya di koridor baru.</div>
+          </div>
+          <div class="timeline">
+            <div class="tl-item">
+              <div class="tl-title" style="color:var(--amber)">Koridor 0–50 m jalan baru: Dampak terbesar</div>
+              <div class="tl-body">Kenaikan nilai +30–40%. Perubahan langsung ke zona Sangat Tinggi atau Tinggi. Area yang sebelumnya "terkunci" oleh aksesibilitas buruk kini terhubung ke jaringan arteri.</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-title" style="color:var(--blue)">Konektivitas Terban–Klitren meningkat</div>
+              <div class="tl-body">Zona Rendah di timur Klitren berpotensi naik ke Tinggi. Aksesibilitas adalah variabel dengan bobot tertinggi (34,44%), sehingga dampak spasial paling luas dari semua skenario.</div>
+            </div>
+            <div class="tl-item">
+              <div class="tl-title" style="color:var(--red)">⚠ Perhatian: Risiko Displacement</div>
+              <div class="tl-body">Kenaikan harga tanah yang terlalu cepat di area yang saat ini masih terjangkau dapat menyebabkan <strong>displacement</strong> penghuni berpenghasilan rendah. Kebijakan perumahan inklusif perlu disiapkan.</div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:16px">PROYEKSI PERUBAHAN DISTRIBUSI</div>
+          <div class="dist-row">
+            <span class="dist-lbl">Sangat Tinggi</span>
+            <div class="dist-bar-wrap">
+              <div class="dist-bar" style="width:5.2%;background:var(--teal)"></div>
+            </div>
+            <span class="dist-pct" style="color:var(--teal)">2,8% → <strong>5,2%</strong></span>
+          </div>
+          <div class="dist-row">
+            <span class="dist-lbl">Tinggi</span>
+            <div class="dist-bar-wrap">
+              <div class="dist-bar" style="width:68%;background:var(--blue)"><span class="dist-bar-txt">68%</span></div>
+            </div>
+            <span class="dist-pct" style="color:var(--blue)">59,6% → <strong>68,0%</strong></span>
+          </div>
+          <div class="dist-row">
+            <span class="dist-lbl">Rendah</span>
+            <div class="dist-bar-wrap">
+              <div class="dist-bar" style="width:25%;background:var(--amber)"><span class="dist-bar-txt">25%</span></div>
+            </div>
+            <span class="dist-pct" style="color:var(--amber)">35,2% → <strong>25,0%</strong></span>
+          </div>
+          <div class="dist-row">
+            <span class="dist-lbl">Sangat Rendah</span>
+            <div class="dist-bar-wrap">
+              <div class="dist-bar" style="width:1.8%;background:var(--red)"></div>
+            </div>
+            <span class="dist-pct" style="color:var(--red)">2,4% → <strong>1,8%</strong></span>
+          </div>
+          <div style="margin-top:14px;padding:12px;background:var(--amber-lt);border-radius:8px;border:1px solid rgba(176,90,0,.2);font-size:12.5px;color:var(--amber)">
+            Intervensi dengan <strong>dampak spasial terluas</strong> karena aksesibilitas adalah variabel paling dominan (34,44%). Zona Tinggi+Sangat Tinggi naik dari 62,4% → 73,2%.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKENARIO C: KOMBINASI -->
+    <div class="sc-content" id="sc-kombi">
+      <div class="card" style="margin-bottom:16px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:16px">SKENARIO C: RS BARU + JALAN ARTERI BARU (KOMBINASI)</div>
+        <div class="cmp-grid">
+          <div class="cmp-card">
+            <div class="cmp-ttl">Baseline</div>
+            <div class="cmp-val">
+              <span style="color:var(--teal)">ST: 2,80%</span><br>
+              <span style="color:var(--blue)">T: 59,57%</span><br>
+              <span style="color:var(--amber)">R: 35,21%</span><br>
+              <span style="color:var(--red)">SR: 2,42%</span><br>
+              <span style="color:var(--txt3);font-size:10px">Tinggi+ST: 62,4%</span>
+            </div>
+          </div>
+          <div class="cmp-card" style="background:var(--teal-lt);border-color:rgba(10,124,110,.3)">
+            <div class="cmp-ttl" style="color:var(--teal)">Setelah Skenario C</div>
+            <div class="cmp-val">
+              <span style="color:var(--teal);font-weight:600">ST: 6,0% ↑</span><br>
+              <span style="color:var(--blue);font-weight:600">T: 72,0% ↑</span><br>
+              <span style="color:var(--amber);font-weight:600">R: 20,5% ↓</span><br>
+              <span style="color:var(--red);font-weight:600">SR: 1,5% ↓</span><br>
+              <span style="color:var(--teal);font-size:10px;font-weight:600">Tinggi+ST: 78,0% ↑</span>
+            </div>
+          </div>
+          <div class="cmp-card" style="background:var(--blue-lt);border-color:rgba(21,88,168,.3)">
+            <div class="cmp-ttl" style="color:var(--blue)">Estimasi Dampak</div>
+            <div class="cmp-val" style="font-size:12px;line-height:1.7;color:var(--txt2)">
+              Zona Tinggi+Sangat Tinggi meningkat <strong style="color:var(--teal)">+15,6 poin persentase</strong>.<br><br>
+              Zona Rendah+Sangat Rendah berkurang dari <strong style="color:var(--red)">37,6%</strong> menjadi <strong style="color:var(--teal)">22,0%</strong>.<br><br>
+              Skenario pemerataan pembangunan <strong>paling signifikan</strong>.
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:16px;padding:12px 16px;background:var(--red-lt);border-radius:8px;border:1px solid rgba(184,40,40,.2);font-size:12.5px;color:var(--red);line-height:1.7">
+          <strong>⚠ Catatan penting:</strong> Kenaikan nilai tanah yang signifikan berpotensi menyebabkan <em>displacement</em> bagi penghuni berpenghasilan rendah. Kebijakan perumahan yang inklusif — seperti subsidi sewa, zonasi campuran, atau community land trust — perlu disiapkan bersamaan dengan pembangunan infrastruktur.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CHAPTER 05 — REKOMENDASI KEBIJAKAN
+═══════════════════════════════════════════════════════════ -->
+<section id="ch5">
+  <div class="container">
+    <div class="ch-label">Chapter 05</div>
+    <h2>Rekomendasi<br><span class="hl-blue">Kebijakan</span></h2>
+    <p class="lead">Peta nilai tanah bukan tujuan akhir — ia adalah alat pengambilan keputusan. Berikut 5 rekomendasi kebijakan berbasis data untuk perencanaan tata ruang dan pengelolaan nilai tanah Kecamatan Gondokusuman.</p>
+
+    <!-- 5 REKOMENDASI -->
+    <div style="margin-top:24px;margin-bottom:40px">
+      <div class="rekom-card" style="border-left-color:var(--teal)">
+        <span class="rekom-tag" style="background:var(--teal-lt);color:var(--teal)">PRIORITAS TINGGI · JANGKA PENDEK (1–2 THN)</span>
+        <h3>1. Pembaruan NJOP Zona Koridor Komersial</h3>
+        <p class="body-text">Zona Sangat Tinggi di sepanjang Jl. Solo dan Jl. Urip Sumoharjo menunjukkan harga pasar aktual Rp 21,5–56,8 juta/m², jauh melampaui ZNT BPN yang berkisar &gt; Rp 20 juta/m². Gap ini menciptakan potensi pajak (PBB dan BPHTB) yang belum terealisasi secara optimal. <strong>Tindakan:</strong> Lakukan survei penilaian massal berbasis GIS untuk memperbarui NJOP secara lebih granular per zona — model Weighted Overlay ini dapat menjadi kerangka metodologisnya.</p>
+      </div>
+      <div class="rekom-card" style="border-left-color:var(--blue)">
+        <span class="rekom-tag" style="background:var(--blue-lt);color:var(--blue)">PRIORITAS TINGGI · JANGKA MENENGAH (2–5 THN)</span>
+        <h3>2. Peningkatan Aksesibilitas Koridor Timur</h3>
+        <p class="body-text">Wilayah timur Klitren dan sebagian Terban mencatat nilai tanah rendah akibat terisolasi dari jaringan jalan utama. Skenario B membuktikan bahwa investasi infrastruktur jalan di koridor ini berpotensi meningkatkan nilai tanah 15–25% dan memperluas zona Tinggi secara signifikan. <strong>Tindakan:</strong> Pelebaran atau pembukaan jalan kolektor baru di koridor timur Klitren–Terban, disertai peningkatan kualitas perkerasan jalan lokal yang menghubungkan ke jaringan arteri.</p>
+      </div>
+      <div class="rekom-card" style="border-left-color:var(--purple)">
+        <span class="rekom-tag" style="background:var(--purple-lt);color:var(--purple)">PRIORITAS SEDANG · JANGKA MENENGAH (3–5 THN)</span>
+        <h3>3. Penambahan Fasilitas Kesehatan di Baciro Selatan</h3>
+        <p class="body-text">Sekitar 30% wilayah Baciro berada di luar radius optimal (&gt;600 m) dari fasilitas kesehatan terdekat. Skenario A membuktikan bahwa pembangunan puskesmas pembantu atau klinik bersalin di Baciro tengah-selatan dapat meningkatkan nilai tanah 8–12% sekaligus meningkatkan pelayanan kesehatan masyarakat. <strong>Tindakan:</strong> Studi kelayakan lokasi fasilitas kesehatan baru di Baciro dengan model aksesibilitas spasial, kemudian integrasikan dengan RDTR.</p>
+      </div>
+      <div class="rekom-card" style="border-left-color:var(--amber)">
+        <span class="rekom-tag" style="background:var(--amber-lt);color:var(--amber)">PRIORITAS SEDANG · BERKELANJUTAN</span>
+        <h3>4. Pengendalian Alih Fungsi Lahan Heritage Kotabaru</h3>
+        <p class="body-text">Kawasan heritage Kotabaru memiliki nilai tanah sangat tinggi (Rp 21,5–56,8 juta/m²) yang menciptakan tekanan ekonomi luar biasa untuk alih fungsi dari hunian/heritage ke komersial. Tanpa pengendalian yang tegas, karakter heritage yang justru menjadi pendorong nilai tanah itu sendiri berisiko terdegradasi. <strong>Tindakan:</strong> Pertegas batasan fungsi komersial di RDTR Kotabaru, terapkan <em>Transfer of Development Rights (TDR)</em> sebagai insentif pelestarian, dan jadikan heritage value sebagai variabel eksplisit dalam model penilaian tanah berikutnya.</p>
+      </div>
+      <div class="rekom-card" style="border-left-color:var(--red)">
+        <span class="rekom-tag" style="background:var(--red-lt);color:var(--red)">JANGKA PANJANG (5–10 THN)</span>
+        <h3>5. Sistem ZNT Dinamis Berbasis GIS dan Data Real-Time</h3>
+        <p class="body-text">Model GIS-AHP ini adalah prototipe yang dapat dikembangkan menjadi sistem Zona Nilai Tanah dinamis yang diperbarui secara berkala. Integrasi dengan data pasar properti real-time, sensor aksesibilitas IoT, dan data demografi sensus terbaru akan meningkatkan akurasi secara signifikan. <strong>Tindakan:</strong> Kembangkan platform WebGIS nilai tanah yang dapat diakses publik (seperti yang didemonstrasikan dalam proyek ini), dengan fitur pembaruan data berkala dan mekanisme crowdsourcing validasi harga pasar dari masyarakat dan agen properti.</p>
+      </div>
+    </div>
+
+    <!-- 3 SIMPULAN UTAMA -->
+    <div style="padding:28px;background:var(--surface);border:1px solid var(--border2);border-radius:14px;border-top:4px solid var(--blue)">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:20px">TIGA PELAJARAN UTAMA</div>
+      <div class="three-col">
+        <div style="padding:0 16px 0 0;border-right:1px solid var(--border)">
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--blue);margin-bottom:10px">Aksesibilitas adalah penentu utama</div>
+          <div class="body-text">Dengan bobot 34,44%, jalan utama adalah variabel tunggal paling berpengaruh. Setiap investasi infrastruktur jalan bukan sekadar proyek transportasi — ia adalah <strong>kebijakan nilai tanah</strong> secara langsung.</div>
+        </div>
+        <div style="padding:0 16px;border-right:1px solid var(--border)">
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--teal);margin-bottom:10px">Gradien pusat–pinggiran terkonfirmasi</div>
+          <div class="body-text">Pola nilai tanah Gondokusuman konsisten dengan teori bid-rent Alonso (1964): nilai tertinggi di Kotabaru–Demangan, menurun gradual ke Baciro–Terban. Temuan ini <strong>memvalidasi model teoritis dengan data empiris lapangan</strong>.</div>
+        </div>
+        <div style="padding:0 0 0 16px">
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--amber);margin-bottom:10px">Potensi pemerataan ada di timur</div>
+          <div class="body-text">Investasi infrastruktur di koridor timur Klitren dan selatan Baciro memiliki <strong>return on investment tertinggi</strong> dalam konteks pemerataan nilai tanah. Dua kelurahan ini adalah frontier pembangunan Gondokusuman.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUMBER DATA -->
+    <div style="margin-top:32px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:12px">SUMBER DATA</div>
+      <div style="overflow-x:auto;border-radius:10px;border:1px solid var(--border2)">
+        <table class="vtbl">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Sumber</th>
+              <th>Tahun</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Batas Administrasi &amp; Jaringan Jalan</td><td>INA-Geoportal</td><td style="font-family:'IBM Plex Mono',monospace">2026</td></tr>
+            <tr><td>Titik Fasilitas Umum</td><td>INA-Geoportal</td><td style="font-family:'IBM Plex Mono',monospace">2026</td></tr>
+            <tr><td>Data Demografi</td><td>BPS Kota Yogyakarta</td><td style="font-family:'IBM Plex Mono',monospace">2024</td></tr>
+            <tr><td>Zona Nilai Tanah (ZNT) Referensi</td><td>BHUMI ATR/BPN</td><td style="font-family:'IBM Plex Mono',monospace">2026</td></tr>
+            <tr><td>Harga Pasar Sampel (16 titik)</td><td>Platform Jual-Beli Properti</td><td style="font-family:'IBM Plex Mono',monospace">2026</td></tr>
+            <tr><td>Citra Satelit / Basemap</td><td>ESRI World Imagery</td><td style="font-family:'IBM Plex Mono',monospace">2026</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ FOOTER ═══════════════════════════════ -->
+<footer>
+  <div class="footer-title">Storymapping Nilai Tanah — Kecamatan Gondokusuman</div>
+  <div class="footer-sub">Penilaian Tanah dan Properti (A) · Dept. Teknik Geomatika · FTSPK · ITS · 2026</div>
+  <div class="footer-members">Tsabitha Indhira Ekasuci · Meivinda Putri Amalia · Fayra Alifya Annisa · Nayla Cinta Mulyana · Risya Hamidatul Mualimah</div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const navLinks = document.querySelectorAll('.ch-link');
+function setActive(i){
+  navLinks.forEach((l,j)=>l.classList.toggle('active',i===j));
+  for(let k=0;k<5;k++){
+    const dot = document.getElementById('pd'+k);
+    const lbl = document.getElementById('pl'+k);
+    if(!dot)continue;
+    if(k<i){dot.classList.add('done');dot.classList.remove('active');lbl.classList.remove('active')}
+    else if(k===i){dot.classList.add('active');dot.classList.remove('done');lbl.classList.add('active')}
+    else{dot.classList.remove('active','done');lbl.classList.remove('active')}
+    const line = document.getElementById('pline'+k);
+    if(line) line.classList.toggle('done',k<i);
+  }
+}
+
+const observer = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      const idx = ['ch1','ch2','ch3','ch4','ch5'].indexOf(e.target.id);
+      if(idx>=0) setActive(idx);
+    }
+  });
+},{threshold:0.3});
+document.querySelectorAll('section[id]').forEach(s=>observer.observe(s));
+
+function showSc(name, btn){
+  document.querySelectorAll('.sc-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.sc-content').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sc-'+name).classList.add('active');
+}
+
+const ZONES_DATA = [
+  {name:'Kotabaru', kelas:'Sangat Tinggi', color:'#0a7c6e', fillColor:'#d0f0eb',
+   coords:[[-7.779,110.373],[-7.774,110.373],[-7.774,110.383],[-7.779,110.383]]},
+  {name:'Demangan', kelas:'Tinggi', color:'#1558a8', fillColor:'#d6e8ff',
+   coords:[[-7.785,110.378],[-7.779,110.378],[-7.779,110.388],[-7.785,110.388]]},
+  {name:'Klitren',  kelas:'Tinggi', color:'#5a30a0', fillColor:'#f0e8ff',
+   coords:[[-7.785,110.373],[-7.779,110.373],[-7.779,110.378],[-7.785,110.378]]},
+  {name:'Baciro',   kelas:'Rendah', color:'#b05a00', fillColor:'#ffeacc',
+   coords:[[-7.793,110.378],[-7.785,110.378],[-7.785,110.395],[-7.793,110.395]]},
+  {name:'Terban',   kelas:'Rendah-Sangat Rendah', color:'#7a95b0', fillColor:'#f4f7fb',
+   coords:[[-7.779,110.383],[-7.773,110.383],[-7.773,110.393],[-7.779,110.393]]},
+];
+
+function buildMap(id, center, zoom){
+  const tiles = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+  const m = L.map(id,{zoomControl:true,scrollWheelZoom:false}).setView(center,zoom);
+  L.tileLayer(tiles,{attribution:'© CARTO',maxZoom:19}).addTo(m);
+  ZONES_DATA.forEach(z=>{
+    L.polygon(z.coords,{
+      color:z.color,weight:2.5,fillColor:z.fillColor,fillOpacity:0.65
+    }).bindPopup(`<div style="font-family:'Instrument Sans',sans-serif;font-size:12px;padding:4px">
+      <strong style="color:${z.color}">${z.name}</strong><br>
+      <span style="color:#3d5068">${z.kelas}</span>
+    </div>`).bindTooltip(`<span style="font-family:'Instrument Sans',sans-serif;font-size:11px">${z.name}</span>`,{sticky:true}).addTo(m);
+  });
+  return m;
+}
+
+buildMap('map-ch1',[-7.782,110.383],14);
+buildMap('map-ch3',[-7.782,110.383],14);
+
+setActive(0);
+</script>
+</body>
+</html>

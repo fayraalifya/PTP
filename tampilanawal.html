@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UAS Visualisasi Data — Kelompok 7</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#eef2f7;
+  --surface:#ffffff;
+  --surface2:#f4f7fb;
+  --border:#d8e2f0;
+  --border2:#b8c9e0;
+  --txt:#0f1923;
+  --txt2:#3d5068;
+  --txt3:#7a95b0;
+  --teal:#0a7c6e;
+  --teal-lt:#d0f0eb;
+  --blue:#1558a8;
+  --blue-lt:#d6e8ff;
+  --amber:#b05a00;
+  --amber-lt:#ffeacc;
+  --red:#b82828;
+  --red-lt:#fde0e0;
+  --purple:#5a30a0;
+  --purple-lt:#f0e8ff;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden}
+
+/* ── HEADER ── */
+header{
+  position:sticky;top:0;z-index:9000;height:52px;
+  background:linear-gradient(135deg,#0f1923 0%,#1a2e45 60%,#0f2a3a 100%);
+  border-bottom:2px solid #0a3d62;
+  display:flex;align-items:center;padding:0 16px;gap:12px;
+  box-shadow:0 2px 12px rgba(0,0,0,.3);
+}
+header::before{
+  content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,#c83232,#e8a020,#28c080,#1558a8,#c83232);
+  background-size:300% 100%;animation:stripe 6s linear infinite;
+}
+@keyframes stripe{to{background-position:-300% 0}}
+header::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.015) 0px,rgba(255,255,255,.015) 1px,transparent 1px,transparent 8px);pointer-events:none}
+
+.logos{display:flex;align-items:center;gap:10px;flex-shrink:0;position:relative;z-index:1}
+.logo-img{height:30px;width:auto;object-fit:contain}
+.logo-sep{width:1px;height:22px;background:rgba(255,255,255,.2)}
+.h-mid{flex:1;padding:0 14px;position:relative;z-index:1}
+.h-title{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;color:#fff}
+.h-sub{font-size:9.5px;color:rgba(255,255,255,.45);margin-top:1px}
+.h-right{display:flex;align-items:center;gap:6px;flex-shrink:0;position:relative;z-index:1}
+.h-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;padding:3px 9px;border-radius:20px;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.55)}
+.h-nav{display:flex;gap:2px;margin-right:8px}
+.h-nav-link{font-size:10.5px;color:rgba(255,255,255,.6);padding:5px 11px;border-radius:5px;text-decoration:none;transition:all .2s;border:1px solid transparent;white-space:nowrap}
+.h-nav-link:hover{color:#fff;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15)}
+.h-nav-link.active{color:#2dd4a8;background:rgba(45,212,168,.12);border-color:rgba(45,212,168,.3)}
+
+/* ── HERO ── */
+.hero{
+  background:linear-gradient(135deg,#0f1923 0%,#1a2e45 55%,#0a2a3a 100%);
+  position:relative;overflow:hidden;
+  padding:72px 0 64px;
+}
+.hero::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(135deg,rgba(255,255,255,.012) 0,rgba(255,255,255,.012) 1px,transparent 1px,transparent 10px);
+}
+.hero-grid-bg{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(42,111,212,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(42,111,212,.05) 1px,transparent 1px);
+  background-size:40px 40px;
+}
+.hero-orb{
+  position:absolute;border-radius:50%;filter:blur(80px);pointer-events:none;
+}
+.hero-orb-1{width:400px;height:400px;background:radial-gradient(circle,rgba(21,88,168,.35),transparent 70%);top:-100px;left:-80px}
+.hero-orb-2{width:500px;height:500px;background:radial-gradient(circle,rgba(0,150,180,.12),transparent 70%);bottom:-150px;right:-100px}
+
+.hero-inner{max-width:1140px;margin:0 auto;padding:0 40px;position:relative;z-index:2;display:grid;grid-template-columns:1fr 420px;gap:48px;align-items:center}
+
+.hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:5px 14px 5px 6px;
+  background:rgba(45,212,168,.1);border:1px solid rgba(45,212,168,.3);border-radius:100px;
+  font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#2dd4a8;
+  margin-bottom:20px;width:fit-content;
+}
+.badge-dot{width:16px;height:16px;background:#2dd4a8;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.badge-dot::after{content:'';width:5px;height:5px;background:#0f1923;border-radius:50%}
+
+.hero-eyebrow{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.4);margin-bottom:12px}
+
+.hero-title{
+  font-family:'Syne',sans-serif;font-size:clamp(36px,5.5vw,68px);
+  font-weight:800;line-height:.95;letter-spacing:-.03em;margin-bottom:20px;
+}
+.hero-title .l1{display:block;color:#fff}
+.hero-title .l2{
+  display:block;
+  background:linear-gradient(135deg,#5ee8c8 0%,#2dd4a8 40%,#4a9eff 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:shimmer 5s ease-in-out infinite;background-size:200% 100%;
+}
+.hero-title .l3{display:block;color:rgba(255,255,255,.3);font-size:.52em;font-weight:600;margin-top:6px}
+@keyframes shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+.hero-desc{font-size:14px;line-height:1.75;color:rgba(255,255,255,.55);font-weight:300;margin-bottom:32px;max-width:480px}
+.hero-desc strong{color:rgba(255,255,255,.85);font-weight:500}
+
+.hero-stats{display:flex;gap:0;margin-bottom:36px}
+.hstat{padding:14px 24px;border-left:1px solid rgba(255,255,255,.1)}
+.hstat:first-child{border-left:none;padding-left:0}
+.hstat-num{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:#fff;line-height:1}
+.hstat-num span{color:#2dd4a8}
+.hstat-lbl{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:4px}
+
+.hero-ctas{display:flex;gap:10px;flex-wrap:wrap}
+.btn-primary{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:13px 26px;background:linear-gradient(135deg,#1558a8,#2a6fd4);
+  border:none;border-radius:10px;font-size:13.5px;font-weight:500;
+  color:#fff;text-decoration:none;cursor:pointer;transition:all .3s;
+  font-family:'Instrument Sans',sans-serif;
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 32px rgba(21,88,168,.45)}
+.btn-outline{
+  display:inline-flex;align-items:center;gap:9px;
+  padding:12px 22px;border:1.5px solid rgba(255,255,255,.2);
+  border-radius:10px;font-size:13.5px;color:rgba(255,255,255,.7);
+  text-decoration:none;cursor:pointer;transition:all .3s;
+  font-family:'Instrument Sans',sans-serif;background:transparent;
+}
+.btn-outline:hover{border-color:rgba(255,255,255,.5);color:#fff;transform:translateY(-2px)}
+
+/* ── MAP PREVIEW CARD ── */
+.map-card{
+  background:rgba(10,22,40,.85);border:1px solid rgba(42,111,212,.25);
+  border-radius:16px;overflow:hidden;
+  box-shadow:0 24px 60px rgba(0,0,0,.4);
+  backdrop-filter:blur(16px);
+}
+.map-card-top{
+  padding:12px 16px;display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(42,111,212,.2);
+  background:rgba(255,255,255,.03);
+}
+.map-card-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:#2dd4a8}
+.map-card-badge{font-size:9px;font-family:'IBM Plex Mono',monospace;padding:2px 8px;background:rgba(45,212,168,.1);border:1px solid rgba(45,212,168,.25);color:#2dd4a8;border-radius:4px}
+#hero-map{height:280px;width:100%}
+.map-card-bottom{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid rgba(42,111,212,.2);
+}
+.map-metric{
+  padding:10px 12px;text-align:center;border-right:1px solid rgba(42,111,212,.15);
+}
+.map-metric:last-child{border-right:none}
+.map-metric-val{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#fff;line-height:1}
+.map-metric-lbl{font-size:8.5px;color:rgba(255,255,255,.35);margin-top:3px;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px}
+
+/* ── SECTIONS ── */
+section.light{background:var(--bg)}
+section.white{background:var(--surface2)}
+.section-inner{max-width:1140px;margin:0 auto;padding:0 40px}
+
+/* ── SECTION LABELS ── */
+.sec-label{
+  font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--blue);margin-bottom:14px;
+  display:flex;align-items:center;gap:10px;
+}
+.sec-label::after{content:'';flex:1;max-width:60px;height:1px;background:var(--blue);opacity:.35}
+h2.sec-title{font-family:'Syne',sans-serif;font-size:clamp(22px,3vw,34px);font-weight:700;color:var(--txt);line-height:1.2;margin-bottom:12px}
+.sec-lead{font-size:14px;color:var(--txt2);line-height:1.8;max-width:600px;margin-bottom:32px}
+
+/* ── ABOUT SECTION ── */
+.about-section{padding:80px 0}
+.about-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:start}
+
+.about-card{background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:20px 22px;transition:border-color .2s;margin-bottom:14px}
+.about-card:hover{border-color:var(--blue)}
+.about-card:last-child{margin-bottom:0}
+.ac-icon{font-size:20px;margin-bottom:10px}
+.ac-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:6px;color:var(--txt)}
+.ac-body{font-size:13px;line-height:1.7;color:var(--txt2)}
+.ac-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.ac-tag{padding:3px 9px;background:var(--blue-lt);border:1px solid rgba(21,88,168,.2);border-radius:100px;font-size:10px;color:var(--blue);font-family:'IBM Plex Mono',monospace}
+
+/* Tujuan & Manfaat */
+.tujuan-list{list-style:none;margin-top:8px}
+.tujuan-list li{
+  display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);
+  font-size:13.5px;color:var(--txt2);line-height:1.7;
+}
+.tujuan-list li:last-child{border-bottom:none}
+.tujuan-num{
+  width:26px;height:26px;border-radius:6px;background:var(--blue-lt);
+  border:1px solid rgba(21,88,168,.2);display:flex;align-items:center;justify-content:center;
+  font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--blue);flex-shrink:0;font-weight:600;margin-top:2px;
+}
+
+.stat-strip{
+  display:flex;gap:0;margin-top:32px;
+  background:var(--surface);border:1px solid var(--border2);border-radius:12px;overflow:hidden;
+}
+.ss-item{flex:1;padding:18px 20px;border-right:1px solid var(--border2)}
+.ss-item:last-child{border-right:none}
+.ss-val{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--blue);line-height:1}
+.ss-lbl{font-size:10px;color:var(--txt3);margin-top:4px;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px}
+
+/* ── LATAR BELAKANG ── */
+.latar-section{padding:80px 0;background:var(--surface2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.latar-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:32px}
+
+.lb-card{
+  background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:24px 26px;
+  border-left:4px solid var(--blue);
+}
+.lb-card.teal{border-left-color:var(--teal)}
+.lb-card.amber{border-left-color:var(--amber)}
+.lb-card.purple{border-left-color:var(--purple)}
+.lb-icon{font-size:22px;margin-bottom:12px}
+.lb-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--txt);margin-bottom:8px}
+.lb-body{font-size:13px;color:var(--txt2);line-height:1.75}
+
+/* ── OUTPUT NAVIGATION CARDS ── */
+.nav-section{padding:80px 0}
+.nav-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:40px}
+
+.nav-card{
+  background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:32px 28px;
+  text-decoration:none;display:block;position:relative;overflow:hidden;transition:all .35s;
+}
+.nav-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--blue);transition:opacity .3s;opacity:0}
+.nav-card.webgis::before{background:linear-gradient(90deg,var(--blue),#2a6fd4)}
+.nav-card.dash::before{background:linear-gradient(90deg,var(--teal),#28c080)}
+.nav-card.story::before{background:linear-gradient(90deg,var(--purple),#7c5cbf)}
+.nav-card:hover{transform:translateY(-6px);box-shadow:0 20px 48px rgba(15,25,35,.12);border-color:var(--blue)}
+.nav-card:hover::before{opacity:1}
+
+.nc-num{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--txt3);margin-bottom:16px}
+.nc-icon-wrap{
+  width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:24px;margin-bottom:18px;
+}
+.nc-icon-wrap.webgis{background:var(--blue-lt)}
+.nc-icon-wrap.dash{background:var(--teal-lt)}
+.nc-icon-wrap.story{background:var(--purple-lt)}
+.nc-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--txt);margin-bottom:8px;line-height:1.2}
+.nc-desc{font-size:13px;color:var(--txt2);line-height:1.65;margin-bottom:20px}
+.nc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:20px}
+.nc-tag{padding:3px 8px;background:rgba(0,0,0,.04);border-radius:5px;font-size:10px;color:var(--txt3);font-family:'IBM Plex Mono',monospace}
+.nc-arrow{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--blue);opacity:.6;transition:all .3s}
+.nav-card:hover .nc-arrow{opacity:1;gap:10px}
+
+/* ── TEAM SECTION ── */
+.team-section{padding:80px 0;background:var(--surface2);border-top:1px solid var(--border)}
+.team-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:40px}
+
+.member-card{
+  background:var(--surface);border:1px solid var(--border2);border-radius:14px;
+  padding:20px 16px;text-align:center;transition:all .35s;
+}
+.member-card:hover{transform:translateY(-5px);border-color:var(--blue);box-shadow:0 16px 40px rgba(21,88,168,.12)}
+.member-avatar{
+  width:72px;height:72px;border-radius:50%;margin:0 auto 14px;
+  background:linear-gradient(135deg,var(--blue),#2a6fd4);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;
+  border:2.5px solid var(--border2);transition:border-color .3s;overflow:hidden;
+}
+.member-card:hover .member-avatar{border-color:var(--blue)}
+.member-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.member-name{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--txt);margin-bottom:6px;line-height:1.35}
+.member-nrp{font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--teal);padding:2px 9px;background:var(--teal-lt);border-radius:100px;display:inline-block}
+
+.dosen-strip{
+  max-width:1140px;margin:28px auto 0;padding:0 40px;
+}
+.dosen-inner{
+  display:flex;align-items:center;gap:14px;padding:18px 24px;
+  background:var(--surface);border:1px solid var(--border2);border-radius:12px;
+  border-left:4px solid var(--teal);
+}
+.dosen-icon{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--blue),#2dd4a8);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.dosen-info{flex:1}
+.dosen-role{font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:2px;font-family:'IBM Plex Mono',monospace}
+.dosen-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--txt)}
+.dosen-nip{font-size:11px;color:var(--txt3);margin-top:1px}
+.dosen-badge{padding:5px 12px;background:var(--teal-lt);border:1px solid rgba(10,124,110,.25);border-radius:100px;font-size:10px;color:var(--teal);white-space:nowrap}
+
+/* ── DIVIDER ── */
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent)}
+
+/* ── FOOTER ── */
+footer{
+  background:linear-gradient(135deg,#0f1923 0%,#1a2e45 60%,#0f2a3a 100%);
+  border-top:2px solid #0a3d62;padding:40px;
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;
+}
+.footer-left{font-size:11.5px;color:rgba(255,255,255,.4)}
+.footer-right{display:flex;align-items:center;gap:6px;font-size:11px;color:rgba(255,255,255,.35)}
+.footer-dot{width:6px;height:6px;background:#2dd4a8;border-radius:50%;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── SCROLL REVEAL ── */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+/* ── LEAFLET OVERRIDES ── */
+.leaflet-container{background:#c8d8e8!important}
+.leaflet-popup-content-wrapper{background:var(--surface)!important;border:1px solid var(--border2)!important;border-radius:8px!important;box-shadow:0 8px 24px rgba(0,0,0,.12)!important}
+.leaflet-popup-content{margin:10px 12px!important;font-family:'Instrument Sans',sans-serif!important;font-size:12px!important}
+.leaflet-popup-tip{background:var(--surface)!important}
+.ll-tip{background:rgba(15,25,35,.9)!important;border:1px solid rgba(255,255,255,.15)!important;border-radius:5px!important;color:#fff!important;font-family:'Instrument Sans',sans-serif!important;font-size:11px!important;padding:4px 9px!important;white-space:nowrap}
+
+@media(max-width:900px){
+  .hero-inner{grid-template-columns:1fr}
+  .map-card{display:none}
+  .about-grid,.latar-grid,.nav-cards{grid-template-columns:1fr}
+  .team-grid{grid-template-columns:repeat(2,1fr)}
+  .stat-strip{flex-wrap:wrap}
+  .hero-inner,.section-inner,.dosen-strip{padding:0 20px}
+  footer{flex-direction:column;text-align:center;padding:28px 20px}
+  .hero{padding:56px 0 48px}
+  section.about-section,section.nav-section,.team-section,.latar-section{padding:56px 0}
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="logos">
+    <img src="logo/ITS.png" class="logo-img" alt="ITS"
+         onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'ITS',style:'font-family:Syne,sans-serif;font-weight:800;font-size:14px;color:#2dd4a8;position:relative;z-index:1'}))">
+    <div class="logo-sep"></div>
+    <img src="logo/GEOMATIKA.png" class="logo-img" alt="Geomatika"
+         onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'GEOMATIKA',style:'font-family:Syne,sans-serif;font-weight:700;font-size:10px;color:rgba(255,255,255,.7);position:relative;z-index:1'}))">
+  </div>
+  <div class="h-mid">
+    <div class="h-title">Visualisasi Interaktif Valuasi Massal Nilai Tanah</div>
+    <div class="h-sub">Dept. Teknik Geomatika ITS · Penilaian Tanah & Properti (A) · Kelompok 7 · 2026</div>
+  </div>
+  <nav class="h-nav">
+    <a class="h-nav-link active" href="tampilanawal.html">🏠 Home</a>
+    <a class="h-nav-link" href="webgis.html">🗺 WebGIS</a>
+    <a class="h-nav-link" href="dashboard.html">📊 Dashboard Analitik</a>
+    <a class="h-nav-link" href="storymapping.html">📖 Storymapping</a>
+  </nav>
+  <div class="h-right">
+    <span class="h-tag">Kelompok 7</span>
+    <span class="h-tag">2026</span>
+  </div>
+</header>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">
+        <div class="badge-dot"></div>
+        Project Based 2 · Penilaian Tanah & Properti
+      </div>
+      <p class="hero-eyebrow">Kelompok 7 · Institut Teknologi Sepuluh Nopember · 2026</p>
+      <h1 class="hero-title">
+        <span class="l1">Visualisasi</span>
+        <span class="l2">Interaktif</span>
+        <span class="l3">Valuasi Massal Nilai Tanah</span>
+      </h1>
+      <p class="hero-desc">
+        Pengembangan <strong>WebGIS Interaktif</strong> dan Dashboard Analitik berbasis Model Nilai Tanah menggunakan GIS & AHP — Kecamatan Gondokusuman, Kota Yogyakarta.
+      </p>
+
+      <div class="hero-stats">
+        <div class="hstat">
+          <div class="hstat-num">5<span>+</span></div>
+          <div class="hstat-lbl">Layer WebGIS</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-num">4<span>+</span></div>
+          <div class="hstat-lbl">Komponen KPI</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-num">5</div>
+          <div class="hstat-lbl">Chapter Story</div>
+        </div>
+        <div class="hstat">
+          <div class="hstat-num">399<span>Ha</span></div>
+          <div class="hstat-lbl">Luas Wilayah</div>
+        </div>
+      </div>
+
+      <div class="hero-ctas">
+        <a href="webgis.html" class="btn-primary">🗺 Buka WebGIS</a>
+        <a href="dashboard.html" class="btn-outline">📊 Dashboard Analitik</a>
+        <a href="storymapping.html" class="btn-outline">📖 Storymapping</a>
+      </div>
+    </div>
+
+    <!-- MAP CARD -->
+    <div>
+      <div class="map-card">
+        <div class="map-card-top">
+          <span class="map-card-label">Peta Hasil Model Nilai Tanah</span>
+          <span class="map-card-badge">Live Map · Leaflet.js</span>
+        </div>
+        <div id="hero-map"></div>
+        <!-- Mini ZNT legend, same colors as webgis.html ZNT_CFG -->
+        <div style="padding:8px 14px;border-top:1px solid rgba(42,111,212,.2);display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <span style="display:flex;align-items:center;gap:4px;font-size:9px;font-family:'IBM Plex Mono',monospace;color:rgba(255,255,255,.7)">
+              <span style="width:11px;height:11px;border-radius:2px;background:#c83232;border:1.5px solid #7a0000;flex-shrink:0;display:inline-block"></span>Sangat Tinggi
+            </span>
+            <span style="display:flex;align-items:center;gap:4px;font-size:9px;font-family:'IBM Plex Mono',monospace;color:rgba(255,255,255,.7)">
+              <span style="width:11px;height:11px;border-radius:2px;background:#e8a020;border:1.5px solid #7a3a00;flex-shrink:0;display:inline-block"></span>Tinggi
+            </span>
+            <span style="display:flex;align-items:center;gap:4px;font-size:9px;font-family:'IBM Plex Mono',monospace;color:rgba(255,255,255,.7)">
+              <span style="width:11px;height:11px;border-radius:2px;background:#28c080;border:1.5px solid #0d4a20;flex-shrink:0;display:inline-block"></span>Rendah
+            </span>
+            <span style="display:flex;align-items:center;gap:4px;font-size:9px;font-family:'IBM Plex Mono',monospace;color:rgba(255,255,255,.7)">
+              <span style="width:11px;height:11px;border-radius:2px;background:#2878d0;border:1.5px solid #08306e;flex-shrink:0;display:inline-block"></span>Sangat Rendah
+            </span>
+          </div>
+          <span style="font-size:9px;font-family:'IBM Plex Mono',monospace;color:rgba(255,255,255,.35)">Klik zona → detail</span>
+        </div>
+        <div class="map-card-bottom">
+          <div class="map-metric">
+            <div class="map-metric-val" style="color:#c83232">2,80%</div>
+            <div class="map-metric-lbl">Sangat Tinggi</div>
+          </div>
+          <div class="map-metric">
+            <div class="map-metric-val" style="color:#e8a020">59,57%</div>
+            <div class="map-metric-lbl">Tinggi</div>
+          </div>
+          <div class="map-metric">
+            <div class="map-metric-val" style="color:#28c080">35,21%</div>
+            <div class="map-metric-lbl">Rendah</div>
+          </div>
+          <div class="map-metric">
+            <div class="map-metric-val" style="color:#2878d0">2,42%</div>
+            <div class="map-metric-lbl">Sangat Rendah</div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size:10.5px;color:rgba(255,255,255,.3);text-align:center;margin-top:8px;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px">
+        Klik peta untuk detail zona · <a href="webgis.html" style="color:rgba(45,212,168,.7);text-decoration:none">Buka WebGIS lengkap →</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- ── LATAR BELAKANG ── -->
+<div class="latar-section">
+  <div class="section-inner">
+    <div class="sec-label">Latar Belakang & Konteks</div>
+    <h2 class="sec-title" style="max-width:700px">Mengapa Penilaian Nilai Tanah Penting?</h2>
+    <p class="sec-lead">Nilai tanah adalah cerminan kompleks dari aksesibilitas, fasilitas, dan dinamika kota. Tanpa model yang sistematis, penetapan NJOP seringkali tidak mencerminkan harga pasar riil — menciptakan gap yang merugikan baik pemerintah maupun masyarakat.</p>
+
+    <div class="latar-grid">
+      <div class="lb-card">
+        <div class="lb-icon">🏙️</div>
+        <div class="lb-title">Tantangan Penilaian Massal</div>
+        <div class="lb-body">Kecamatan Gondokusuman mencakup ±399 Ha dengan 5 kelurahan yang memiliki karakter sangat beragam — dari kawasan heritage Kotabaru hingga permukiman padat Baciro. Penilaian satu-per-satu tidak efisien dan tidak konsisten secara spasial.</div>
+      </div>
+      <div class="lb-card teal">
+        <div class="lb-icon">📊</div>
+        <div class="lb-title">Solusi: Pemodelan Spasial GIS</div>
+        <div class="lb-body">Model Weighted Overlay berbasis AHP mengintegrasikan 7 variabel lokasi — aksesibilitas jalan, fasilitas kesehatan, pendidikan, ibadah, pemerintahan, kantor pos, dan demografi — menjadi satu peta nilai tanah yang obyektif dan terukur.</div>
+      </div>
+      <div class="lb-card amber">
+        <div class="lb-icon">🎯</div>
+        <div class="lb-title">Tujuan Penelitian</div>
+        <div class="lb-body">
+          <strong>1.</strong> Memodelkan nilai tanah Kec. Gondokusuman berbasis faktor lokasi menggunakan analisis spasial dan GIS.<br><br>
+          <strong>2.</strong> Mengembangkan sistem visualisasi interaktif (WebGIS, Dashboard, Storymapping) sebagai media komunikasi publik.<br><br>
+          <strong>3.</strong> Memvalidasi model dengan data sampel harga pasar aktual (16 titik sampel).
+        </div>
+      </div>
+      <div class="lb-card purple">
+        <div class="lb-icon">✨</div>
+        <div class="lb-title">Manfaat & Dampak</div>
+        <div class="lb-body">
+          <strong>Bagi Pemerintah:</strong> Dasar pembaruan NJOP yang lebih akurat dan transparan.<br><br>
+          <strong>Bagi Perencana:</strong> Peta zona nilai sebagai input RDTR dan kebijakan tata ruang berbasis data.<br><br>
+          <strong>Bagi Publik:</strong> Akses informasi nilai tanah yang mudah dipahami melalui visualisasi interaktif.
+        </div>
+      </div>
+    </div>
+
+    <!-- Metodologi singkat -->
+    <div style="margin-top:28px;background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:24px 28px">
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:16px">METODOLOGI RINGKAS</div>
+      <div style="display:flex;gap:0;overflow-x:auto">
+        <div style="flex:1;min-width:140px;padding:0 20px 0 0;border-right:1px solid var(--border)">
+          <div style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--blue);margin-bottom:5px">01 · PERSIAPAN DATA</div>
+          <div style="font-size:12.5px;color:var(--txt2);line-height:1.6">Pengumpulan data GIS dari INA-Geoportal, BPS, BHUMI ATR/BPN</div>
+        </div>
+        <div style="flex:1;min-width:140px;padding:0 20px;border-right:1px solid var(--border)">
+          <div style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--blue);margin-bottom:5px">02 · ANALISIS AHP</div>
+          <div style="font-size:12.5px;color:var(--txt2);line-height:1.6">Pembobotan 7 variabel, CR=0.038 (valid), buffer spasial per fasilitas</div>
+        </div>
+        <div style="flex:1;min-width:140px;padding:0 20px;border-right:1px solid var(--border)">
+          <div style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--blue);margin-bottom:5px">03 · WEIGHTED OVERLAY</div>
+          <div style="font-size:12.5px;color:var(--txt2);line-height:1.6">Superimposisi layer berbobot, klasifikasi Natural Breaks (Jenks) → 4 zona ZNT</div>
+        </div>
+        <div style="flex:1;min-width:140px;padding:0 0 0 20px">
+          <div style="font-size:10px;font-family:'IBM Plex Mono',monospace;color:var(--blue);margin-bottom:5px">04 · VISUALISASI</div>
+          <div style="font-size:12.5px;color:var(--txt2);line-height:1.6">WebGIS Leaflet.js, Dashboard Chart.js, Storymapping naratif 5 chapter</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ABOUT / DESKRIPSI OUTPUT ── -->
+<div class="about-section">
+  <div class="section-inner">
+    <div class="about-grid reveal">
+      <div>
+        <div class="sec-label">Deskripsi Tugas</div>
+        <h2 class="sec-title">Tentang <span style="color:var(--blue)">Project Based 2</span></h2>
+        <p class="sec-lead">Mengembangkan sistem visualisasi data interaktif dari model nilai tanah yang dibangun pada ETS, sehingga hasil penilaian dapat dikomunikasikan secara transparan, informatif, dan dapat diakses publik.</p>
+
+        <div class="about-card">
+          <div class="ac-icon">🗺️</div>
+          <div class="ac-title">WebGIS Interaktif</div>
+          <div class="ac-body">Sistem peta berbasis web dengan choropleth ZNT, heatmap KDE, bubble chart sampel, layer fasilitas & aksesibilitas, serta filter interaktif dan buffer radius per layer.</div>
+          <div class="ac-tags">
+            <span class="ac-tag">Leaflet.js</span><span class="ac-tag">Choropleth</span><span class="ac-tag">Heatmap KDE</span><span class="ac-tag">GeoJSON</span>
+          </div>
+        </div>
+        <div class="about-card">
+          <div class="ac-icon">📊</div>
+          <div class="ac-title">Dashboard Analitik</div>
+          <div class="ac-body">Visualisasi data komprehensif dengan KPI cards, histogram distribusi, bar chart, scatter plot aksesibilitas vs nilai tanah, box plot, dan tabel ringkasan.</div>
+          <div class="ac-tags">
+            <span class="ac-tag">KPI Metrics</span><span class="ac-tag">Histogram</span><span class="ac-tag">Scatter Plot</span><span class="ac-tag">COD Analysis</span>
+          </div>
+        </div>
+        <div class="about-card">
+          <div class="ac-icon">📖</div>
+          <div class="ac-title">Storymapping</div>
+          <div class="ac-body">Narasi visual interaktif 5 chapter: wilayah studi → faktor nilai → pola spasial → skenario → rekomendasi kebijakan untuk komunikasi publik yang mudah dipahami.</div>
+          <div class="ac-tags">
+            <span class="ac-tag">5 Chapters</span><span class="ac-tag">Narasi Visual</span><span class="ac-tag">Infografis</span><span class="ac-tag">Skenario</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="position:sticky;top:72px">
+          <div style="background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:24px;margin-bottom:16px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:16px">WILAYAH STUDI</div>
+            <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--blue);margin-bottom:6px">Kec. Gondokusuman</div>
+            <div style="font-size:13px;color:var(--txt2);margin-bottom:16px">Kota Yogyakarta, Daerah Istimewa Yogyakarta</div>
+            <ul class="tujuan-list" style="margin-top:0">
+              <li><div class="tujuan-num">✓</div><div>5 Kelurahan: Kotabaru, Demangan, Klitren, Baciro, Terban</div></li>
+              <li><div class="tujuan-num">✓</div><div>Luas ±399 Ha — kepadatan 4.358–13.930 jiwa/km²</div></li>
+              <li><div class="tujuan-num">✓</div><div>16 titik sampel harga pasar aktual (Rp 5,6 – 56,8 jt/m²)</div></li>
+              <li><div class="tujuan-num">✓</div><div>7 variabel penentu nilai tanah (AHP CR=0,038)</div></li>
+              <li><div class="tujuan-num">✓</div><div>4 kelas zona: Sangat Tinggi · Tinggi · Rendah · Sangat Rendah</div></li>
+            </ul>
+          </div>
+
+          <div class="stat-strip">
+            <div class="ss-item">
+              <div class="ss-val">Rp 56,8</div>
+              <div class="ss-lbl">Jt/m² Tertinggi</div>
+            </div>
+            <div class="ss-item">
+              <div class="ss-val" style="color:var(--teal)">Rp 5,6</div>
+              <div class="ss-lbl">Jt/m² Terendah</div>
+            </div>
+            <div class="ss-item">
+              <div class="ss-val" style="color:var(--amber)">24,3%</div>
+              <div class="ss-lbl">COD Moderat</div>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:18px 20px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:12px">FORMULA WEIGHTED OVERLAY</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--txt);line-height:2;background:var(--bg);padding:12px 14px;border-radius:8px;border:1px solid var(--border)">
+              NZT = <span style="color:var(--blue)">0,3444</span> × Jalan<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span style="color:var(--teal)">0,2317</span> × Demografi<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span style="color:var(--purple)">0,1529</span> × RS<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span style="color:var(--amber)">0,1114</span> × Pendidikan<br>
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ <span style="color:var(--txt3)">0,0748</span> × Ibadah + ...
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── OUTPUT NAV ── -->
+<div class="nav-section">
+  <div class="section-inner">
+    <div class="sec-label reveal">Navigasi Output</div>
+    <h2 class="sec-title reveal">Jelajahi <span style="color:var(--blue)">Produk Visualisasi</span></h2>
+    <p class="sec-lead reveal">Tiga produk utama yang saling terintegrasi — WebGIS untuk eksplorasi spasial, Dashboard untuk analisis data, dan Storymapping untuk narasi publik.</p>
+
+    <div class="nav-cards">
+      <a href="webgis.html" class="nav-card webgis reveal">
+        <div class="nc-num">01 · WebGIS</div>
+        <div class="nc-icon-wrap webgis">🗺️</div>
+        <div class="nc-title">WebGIS Interaktif</div>
+        <div class="nc-desc">Eksplorasi peta choropleth zona nilai tanah, heatmap KDE, bubble chart sampel, layer fasilitas & aksesibilitas dengan filter dinamis dan buffer radius.</div>
+        <div class="nc-tags">
+          <span class="nc-tag">Choropleth ZNT</span><span class="nc-tag">Heatmap KDE</span><span class="nc-tag">Layer Toggle</span><span class="nc-tag">Buffer Radius</span><span class="nc-tag">Filter Interaktif</span>
+        </div>
+        <div class="nc-arrow">Buka WebGIS <span>→</span></div>
+      </a>
+
+      <a href="dashboard.html" class="nav-card dash reveal">
+        <div class="nc-num">02 · Dashboard</div>
+        <div class="nc-icon-wrap dash">📊</div>
+        <div class="nc-title">Dashboard Analitik</div>
+        <div class="nc-desc">Kartu KPI nilai tanah, histogram distribusi, bar chart perbandingan zona, scatter plot aksesibilitas vs nilai, box plot, dan tabel ringkasan.</div>
+        <div class="nc-tags">
+          <span class="nc-tag">KPI Cards</span><span class="nc-tag">Histogram</span><span class="nc-tag">Scatter Plot</span><span class="nc-tag">Box Plot</span><span class="nc-tag">COD Analysis</span>
+        </div>
+        <div class="nc-arrow" style="color:var(--teal)">Buka Dashboard <span>→</span></div>
+      </a>
+
+      <a href="storymapping.html" class="nav-card story reveal">
+        <div class="nc-num">03 · Story</div>
+        <div class="nc-icon-wrap story">📖</div>
+        <div class="nc-title">Story Mapping</div>
+        <div class="nc-desc">Narasi visual 5 chapter interaktif: dari latar belakang wilayah hingga rekomendasi kebijakan berbasis data spasial untuk komunikasi publik.</div>
+        <div class="nc-tags">
+          <span class="nc-tag">5 Chapters</span><span class="nc-tag">Peta Animasi</span><span class="nc-tag">Infografis</span><span class="nc-tag">Skenario</span><span class="nc-tag">Rekomendasi</span>
+        </div>
+        <div class="nc-arrow" style="color:var(--purple)">Buka Storymapping <span>→</span></div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ── TEAM ── -->
+<div class="team-section">
+  <div class="section-inner">
+    <div class="sec-label">Tim Peneliti</div>
+    <h2 class="sec-title">Kelompok <span style="color:var(--blue)">7</span></h2>
+    <div class="team-grid">
+      <div class="member-card reveal">
+        <div class="member-avatar">
+          <img src="logo/Indhira.jpeg" alt="Tsabitha" onerror="this.style.display='none';this.parentElement.textContent='TI'">
+        </div>
+        <div class="member-name">Tsabitha Indhira Ekasuci</div>
+        <div class="member-nrp">5016231025</div>
+      </div>
+      <div class="member-card reveal">
+        <div class="member-avatar">
+          <img src="logo/Vinda.jpeg" alt="Meivinda" onerror="this.style.display='none';this.parentElement.textContent='MA'">
+        </div>
+        <div class="member-name">Meivinda Putri Amalia</div>
+        <div class="member-nrp">5016231026</div>
+      </div>
+      <div class="member-card reveal" style="border-color:rgba(45,212,168,.4)">
+        <div class="member-avatar" style="border-color:var(--teal)">
+          <img src="logo/Fayra.JPG" alt="Fayra Alifya Annisa" onerror="this.style.display='none';this.parentElement.textContent='FA'">
+        </div>
+        <div class="member-name">Fayra Alifya Annisa</div>
+        <div class="member-nrp">5016231028</div>
+      </div>
+      <div class="member-card reveal">
+        <div class="member-avatar">
+          <img src="logo/Cinta.jpeg" alt="Nayla" onerror="this.style.display='none';this.parentElement.textContent='NC'">
+        </div>
+        <div class="member-name">Nayla Cinta Mulyana</div>
+        <div class="member-nrp">5016231046</div>
+      </div>
+      <div class="member-card reveal">
+        <div class="member-avatar">
+          <img src="logo/Risya.jpeg" alt="Risya" onerror="this.style.display='none';this.parentElement.textContent='RH'">
+        </div>
+        <div class="member-name">Risya Hamidatul Mualimah</div>
+        <div class="member-nrp">5016231064</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dosen-strip">
+    <div class="dosen-inner reveal">
+      <div class="dosen-icon">👩‍🏫</div>
+      <div class="dosen-info">
+        <div class="dosen-role">Dosen Pengampu</div>
+        <div class="dosen-name">Udiana Wahyu Deviantari, S.T., M.T.</div>
+        <div class="dosen-nip">NIP. 198701132014042001</div>
+      </div>
+      <div class="dosen-badge">Penilaian Tanah & Properti (A)</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-left">© 2026 Kelompok 7 · Penilaian Tanah dan Properti · ITS Surabaya</div>
+  <div class="footer-right">
+    <div class="footer-dot"></div>
+    UAS Visualisasi Data Interaktif — Kec. Gondokusuman, Yogyakarta
+  </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// ── HERO MAP — ZNT only, same config & data as webgis.html ──
+const heroMap = L.map('hero-map', {
+  center: [-7.781, 110.383], zoom: 14,
+  zoomControl: false, scrollWheelZoom: false,
+  attributionControl: false
+});
+
+// Same basemap as webgis.html default (street)
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom:19}).addTo(heroMap);
+
+// Exact same ZNT_CFG as webgis.html
+const ZNT_CFG = {
+  1:{color:'#7a0000', fillColor:'#c83232', label:'Sangat Tinggi', kelas:'sangat-tinggi', range:'> Rp 20 jt/m²'},
+  2:{color:'#7a3a00', fillColor:'#e8a020', label:'Tinggi',        kelas:'tinggi',        range:'Rp 10–20 jt/m²'},
+  3:{color:'#0d4a20', fillColor:'#28c080', label:'Rendah',        kelas:'rendah',        range:'Rp 5–10 jt/m²'},
+  4:{color:'#08306e', fillColor:'#2878d0', label:'Sangat Rendah', kelas:'sangat-rendah', range:'< Rp 5 jt/m²'}
+};
+function zntCfg(gc){ return ZNT_CFG[gc] || ZNT_CFG[4]; }
+
+// Exact same ZNT_DATA as webgis.html fallback
+const ZNT_DATA = {"type":"FeatureCollection","features":[
+  {"type":"Feature","properties":{"OBJECTID":1,"gridcode":1},"geometry":{"type":"Polygon","coordinates":[[[110.372,-7.778],[110.378,-7.778],[110.378,-7.784],[110.372,-7.784],[110.372,-7.778]]]}},
+  {"type":"Feature","properties":{"OBJECTID":2,"gridcode":2},"geometry":{"type":"Polygon","coordinates":[[[110.378,-7.778],[110.386,-7.778],[110.386,-7.787],[110.378,-7.787],[110.378,-7.778]]]}},
+  {"type":"Feature","properties":{"OBJECTID":3,"gridcode":3},"geometry":{"type":"Polygon","coordinates":[[[110.386,-7.778],[110.396,-7.778],[110.396,-7.789],[110.386,-7.789],[110.386,-7.778]]]}},
+  {"type":"Feature","properties":{"OBJECTID":4,"gridcode":4},"geometry":{"type":"Polygon","coordinates":[[[110.372,-7.784],[110.386,-7.784],[110.386,-7.796],[110.372,-7.796],[110.372,-7.784]]]}},
+  {"type":"Feature","properties":{"OBJECTID":5,"gridcode":2},"geometry":{"type":"Polygon","coordinates":[[[110.386,-7.789],[110.396,-7.789],[110.396,-7.796],[110.386,-7.796],[110.386,-7.789]]]}}
+]};
+
+// Try to load real GeoJSON first (same as webgis.html loadZnt logic), fallback to inline
+async function loadHeroZnt() {
+  let data = null;
+  try {
+    const r = await fetch('data/znt.geojson');
+    if (r.ok) data = await r.json();
+  } catch(e) {}
+  if (!data) data = ZNT_DATA;
+
+  const zntOpacity = 0.65; // same default as webgis.html
+  L.geoJSON(data, {
+    style: f => {
+      const cfg = zntCfg(f.properties.gridcode || 4);
+      // Exact same style as webgis.html loadZnt
+      return { color: cfg.color, weight: 1.8, fillColor: cfg.fillColor, fillOpacity: zntOpacity, opacity: 1 };
+    },
+    onEachFeature: (f, lyr) => {
+      const cfg = zntCfg(f.properties.gridcode || 4);
+      // Tooltip: same format as webgis.html
+      lyr.bindTooltip(`ZNT — ${cfg.label}<br><span style="font-size:10px;opacity:.8">${cfg.range}</span>`, {className:'ll-tip', sticky:true});
+      // Hover: same as webgis.html
+      lyr.on('mouseover', function(){ this.setStyle({fillOpacity: Math.min(zntOpacity + 0.2, 1)}); });
+      lyr.on('mouseout',  function(){ this.setStyle({fillOpacity: zntOpacity}); });
+      // Click → go to WebGIS
+      lyr.on('click', () => { window.location.href = 'webgis.html'; });
+    }
+  }).addTo(heroMap);
+}
+
+loadHeroZnt();
+heroMap.fitBounds([[-7.795,110.373],[-7.768,110.396]]);
+
+// ── SCROLL REVEAL ──
+const reveals = document.querySelectorAll('.reveal');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach((e,i) => {
+    if(e.isIntersecting) setTimeout(() => e.target.classList.add('visible'), i * 60);
+  });
+}, {threshold:0.1});
+reveals.forEach(el => obs.observe(el));
+</script>
+</body>
+</html>

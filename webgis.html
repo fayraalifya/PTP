@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebGIS Nilai Tanah — Kec. Gondokusuman</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#eef2f7;--surface:#ffffff;--surface2:#f4f7fb;
+  --border:#d8e2f0;--border2:#b8c9e0;
+  --txt:#0f1923;--txt2:#3d5068;--txt3:#7a95b0;
+  --teal:#0a7c6e;--teal-lt:#d0f0eb;
+  --blue:#1558a8;--blue-lt:#d6e8ff;
+  --amber:#b05a00;--amber-lt:#ffeacc;
+  --red:#b82828;--red-lt:#fde0e0;
+  --purple:#5a30a0;--purple-lt:#f0e8ff;
+}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--txt);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+header{
+  flex-shrink:0;height:52px;
+  background:linear-gradient(135deg,#0f1923 0%,#1a2e45 60%,#0f2a3a 100%);
+  border-bottom:2px solid #0a3d62;
+  display:flex;align-items:center;padding:0 16px;gap:12px;
+  position:relative;z-index:2000;
+  box-shadow:0 2px 12px rgba(0,0,0,.3);
+}
+header::before{
+  content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,#c83232,#e8a020,#28c080,#1558a8,#c83232);
+  background-size:300% 100%;animation:stripe 6s linear infinite;
+}
+@keyframes stripe{to{background-position:-300% 0}}
+header::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.015) 0px,rgba(255,255,255,.015) 1px,transparent 1px,transparent 8px);pointer-events:none}
+
+.logos{display:flex;align-items:center;gap:10px;flex-shrink:0;position:relative;z-index:1}
+.logo-img{height:30px;width:auto;object-fit:contain}
+.logo-sep{width:1px;height:22px;background:rgba(255,255,255,.2)}
+.h-mid{flex:1;padding:0 14px;position:relative;z-index:1}
+.h-title{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;color:#fff}
+.h-sub{font-size:9.5px;color:rgba(255,255,255,.45);margin-top:1px}
+.h-right{display:flex;align-items:center;gap:6px;flex-shrink:0;position:relative;z-index:1}
+.h-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;padding:3px 9px;border-radius:20px;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.55)}
+
+.h-nav{display:flex;gap:2px;margin-right:8px}
+.h-nav-link{
+  font-size:10.5px;color:rgba(255,255,255,.6);
+  padding:5px 11px;border-radius:5px;text-decoration:none;
+  transition:all .2s;border:1px solid transparent;
+  white-space:nowrap;
+}
+.h-nav-link:hover{color:#fff;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15)}
+.h-nav-link.active{color:#2dd4a8;background:rgba(45,212,168,.12);border-color:rgba(45,212,168,.3)}
+
+.app{display:flex;flex:1;overflow:hidden}
+
+#sb{
+  width:270px;flex-shrink:0;
+  background:linear-gradient(180deg,#f8faff 0%,#eef2fa 50%,#e4edf8 100%);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.sb-scroll{flex:1;overflow-y:auto;overflow-x:hidden}
+.sb-scroll::-webkit-scrollbar{width:4px}
+.sb-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+.sec{padding:11px 13px;border-bottom:1px solid var(--border)}
+.sec-ttl{
+  font-family:'IBM Plex Mono',monospace;font-size:7.5px;font-weight:500;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-bottom:9px;
+  display:flex;align-items:center;gap:6px;
+}
+.sec-ttl::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.bm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}
+.bm-btn{
+  padding:6px 2px;font-size:10px;font-weight:500;
+  font-family:'Instrument Sans',sans-serif;
+  border:1px solid var(--border2);background:var(--surface);
+  color:var(--txt2);border-radius:6px;cursor:pointer;transition:all .18s;text-align:center;
+}
+.bm-btn:hover{border-color:var(--blue);color:var(--blue);background:var(--blue-lt)}
+.bm-btn.on{background:linear-gradient(135deg,var(--blue-lt),#c5dcff);border-color:var(--blue);color:var(--blue);font-weight:600}
+
+.lr{display:flex;align-items:center;gap:8px;padding:4px 4px;cursor:pointer;border-radius:6px;transition:background .12s}
+.lr:hover{background:rgba(21,88,168,.07)}
+.sw{width:32px;height:18px;border-radius:9px;background:var(--border2);position:relative;flex-shrink:0;cursor:pointer;border:none;outline:none;transition:background .22s}
+.sw.on{background:var(--teal)}
+.sw::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .22s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.sw.on::after{left:16px}
+.sym{width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.sym-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.lname{font-size:11px;color:var(--txt2);flex:1;font-weight:400;transition:color .15s}
+.lname.on{color:var(--txt);font-weight:500}
+
+.sl-row{display:flex;align-items:center;gap:7px;margin-top:8px;padding-top:8px;border-top:1px dashed var(--border)}
+.sl-lbl{font-size:9.5px;color:var(--txt3);white-space:nowrap}
+input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:3px;border-radius:2px;outline:none;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--blue);cursor:pointer;box-shadow:0 0 0 2px #fff,0 0 0 3px var(--blue);transition:transform .15s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15)}
+.sl-val{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--blue);min-width:28px;text-align:right}
+
+.fg{margin-bottom:8px}
+.fg label{font-size:10px;color:var(--txt3);display:block;margin-bottom:3px}
+select{
+  width:100%;background:var(--surface);color:var(--txt);
+  border:1px solid var(--border2);padding:6px 28px 6px 10px;
+  border-radius:6px;font-size:11px;font-family:'Instrument Sans',sans-serif;
+  appearance:none;outline:none;cursor:pointer;transition:border-color .18s;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237a95b0'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;
+}
+select:focus{border-color:var(--blue)}
+.reset-btn{width:100%;padding:7px;background:transparent;color:var(--txt2);border:1px solid var(--border2);border-radius:6px;font-size:11px;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .18s}
+.reset-btn:hover{border-color:var(--red);color:var(--red);background:var(--red-lt)}
+
+/* ── BUFFER PER LAYER ── */
+.buf-layer-item{
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:7px;
+  padding:7px 9px;
+  margin-bottom:6px;
+  transition:border-color .18s;
+}
+.buf-layer-item.active{border-color:var(--purple)}
+.buf-layer-header{display:flex;align-items:center;gap:7px;margin-bottom:0}
+.buf-layer-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.buf-layer-name{font-size:10.5px;color:var(--txt2);flex:1;font-weight:500}
+.buf-layer-badge{
+  font-family:'IBM Plex Mono',monospace;font-size:8px;
+  padding:2px 6px;border-radius:3px;
+  background:var(--purple-lt);color:var(--purple);
+  display:none;
+}
+.buf-layer-item.active .buf-layer-badge{display:inline}
+.buf-radius-row{
+  display:none;
+  align-items:center;gap:6px;
+  margin-top:7px;padding-top:7px;
+  border-top:1px dashed var(--border);
+}
+.buf-layer-item.active .buf-radius-row{display:flex}
+.buf-radius-opts{display:flex;gap:4px;flex-wrap:wrap}
+.buf-r-btn{
+  font-size:9px;font-family:'IBM Plex Mono',monospace;
+  padding:3px 7px;border-radius:4px;
+  border:1px solid var(--border2);background:var(--surface);
+  color:var(--txt3);cursor:pointer;transition:all .15s;
+}
+.buf-r-btn:hover{border-color:var(--purple);color:var(--purple)}
+.buf-r-btn.on{background:var(--purple-lt);border-color:var(--purple);color:var(--purple);font-weight:600}
+
+.buf-toggle-btn{
+  font-size:9.5px;font-family:'Instrument Sans',sans-serif;
+  padding:3px 8px;border-radius:5px;
+  border:1px solid var(--border2);background:transparent;
+  color:var(--txt3);cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.buf-toggle-btn:hover{border-color:var(--purple);color:var(--purple);background:var(--purple-lt)}
+.buf-toggle-btn.on{background:var(--purple-lt);border-color:var(--purple);color:var(--purple)}
+
+.buf-clear-all{
+  width:100%;margin-top:4px;padding:6px;
+  background:transparent;color:var(--txt3);
+  border:1px dashed var(--border2);border-radius:6px;
+  font-size:10px;cursor:pointer;font-family:'Instrument Sans',sans-serif;
+  transition:all .18s;
+}
+.buf-clear-all:hover{border-color:var(--red);color:var(--red);background:var(--red-lt)}
+
+.sb-footer{padding:8px 13px;border-top:1px solid var(--border);flex-shrink:0;font-family:'IBM Plex Mono',monospace;font-size:7.5px;color:var(--txt3);letter-spacing:.8px;text-align:center;background:linear-gradient(135deg,#e0eaf8,#d4e4f5)}
+
+#mwrap{flex:1;position:relative;overflow:hidden}
+#map{width:100%;height:100%;background:#c8d8e8}
+
+.stats{position:absolute;top:12px;left:12px;display:flex;gap:7px;z-index:900}
+.sc{background:rgba(15,25,35,.85);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(10px);border-radius:8px;padding:7px 12px;text-align:center}
+.sc-v{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:#5ee8c8;display:block}
+.sc-l{font-size:8.5px;color:rgba(255,255,255,.45);display:block;margin-top:1px}
+
+#legend-float{
+  position:absolute;top:12px;right:12px;
+  background:rgba(255,255,255,.97);
+  border:1px solid var(--border2);
+  backdrop-filter:blur(12px);
+  border-radius:10px;padding:12px 14px;
+  z-index:900;min-width:200px;max-width:230px;
+  box-shadow:0 4px 20px rgba(0,0,0,.12);
+  max-height:calc(100vh - 140px);overflow-y:auto;
+}
+#legend-float::-webkit-scrollbar{width:3px}
+#legend-float::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.leg-ttl{font-family:'IBM Plex Mono',monospace;font-size:7.5px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.leg-ttl::after{content:'';flex:1;height:1px;background:var(--border)}
+.leg-group-title{font-family:'IBM Plex Mono',monospace;font-size:7.5px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-top:10px;margin-bottom:5px}
+.leg-item{display:flex;align-items:center;gap:7px;padding:2.5px 0}
+.leg-box{width:14px;height:12px;border-radius:2px;flex-shrink:0}
+.leg-txt{font-size:10.5px;color:var(--txt2);flex:1}
+.leg-val{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--txt3)}
+.leg-sep{height:1px;background:var(--border);margin:6px 0}
+.leg-empty{font-size:10.5px;color:var(--txt3);font-style:italic;padding:2px 0}
+
+.leaflet-container{background:#c8d8e8 !important}
+.leaflet-control-zoom{border:1px solid var(--border2) !important;border-radius:7px !important;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.12) !important}
+.leaflet-control-zoom a{background:rgba(255,255,255,.95) !important;color:var(--txt) !important;border:none !important;border-bottom:1px solid var(--border) !important;font-size:16px !important;line-height:28px !important;width:28px !important;height:28px !important}
+.leaflet-control-zoom a:last-child{border-bottom:none !important}
+.leaflet-control-zoom a:hover{background:var(--blue-lt) !important;color:var(--blue) !important}
+.leaflet-control-attribution{background:rgba(255,255,255,.8) !important;color:var(--txt3) !important;font-size:8.5px !important;backdrop-filter:blur(4px)}
+
+.leaflet-popup-content-wrapper{background:var(--surface) !important;border:1px solid var(--border2) !important;border-radius:10px !important;color:var(--txt) !important;box-shadow:0 8px 32px rgba(0,0,0,.15) !important}
+.leaflet-popup-tip{background:var(--surface) !important}
+.leaflet-popup-content{margin:12px 14px !important;font-family:'Instrument Sans',sans-serif !important}
+.leaflet-popup-close-button{color:var(--txt3) !important;top:8px !important;right:10px !important}
+.pu-head{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;color:var(--txt);padding-bottom:7px;margin-bottom:7px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px}
+.pu-icon-circ{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.pu-row{display:flex;justify-content:space-between;align-items:center;padding:2.5px 0;gap:10px}
+.pu-k{font-size:9.5px;color:var(--txt3);flex-shrink:0}
+.pu-v{font-size:11px;font-weight:500;color:var(--txt);text-align:right}
+.pu-badge{font-family:'IBM Plex Mono',monospace;font-size:8.5px;padding:2px 7px;border-radius:3px}
+.ll-tip{background:rgba(15,25,35,.9) !important;border:1px solid rgba(255,255,255,.18) !important;border-radius:5px !important;color:#fff !important;font-family:'Instrument Sans',sans-serif !important;font-size:11px !important;padding:4px 9px !important;box-shadow:0 2px 8px rgba(0,0,0,.25) !important;white-space:nowrap}
+
+#loading{position:absolute;inset:0;background:linear-gradient(135deg,#0f1923,#1a2e45);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s}
+.sp{width:36px;height:36px;border-radius:50%;border:3px solid rgba(255,255,255,.15);border-top-color:#2dd4a8;animation:spin .7s linear infinite;margin-bottom:12px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sp-txt{font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(255,255,255,.45);letter-spacing:2px}
+</style>
+</head>
+<body>
+<div id="loading"><div class="sp"></div><div class="sp-txt">MEMUAT PETA...</div></div>
+
+<header>
+  <div class="logos">
+    <img src="logo/ITS.png" class="logo-img" alt="ITS"
+         onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'ITS',style:'font-family:Syne,sans-serif;font-weight:800;font-size:14px;color:#2dd4a8;position:relative;z-index:1'}))">
+    <div class="logo-sep"></div>
+    <img src="logo/GEOMATIKA.png" class="logo-img" alt="Geomatika"
+         onerror="this.replaceWith(Object.assign(document.createElement('span'),{textContent:'GEOMATIKA',style:'font-family:Syne,sans-serif;font-weight:700;font-size:10px;color:rgba(255,255,255,.7);position:relative;z-index:1'}))">
+  </div>
+  <div class="h-mid">
+    <div class="h-title">WebGIS Nilai Tanah — Kec. Gondokusuman</div>
+    <div class="h-sub">Dept. Teknik Geomatika ITS · Penilaian Tanah & Properti 2026 · Kelompok 7</div>
+  </div>
+  <nav class="h-nav">
+    <a class="h-nav-link" href="tampilanawal.html">🏠 Home</a>
+    <a class="h-nav-link active" href="webgis.html">🗺 WebGIS</a>
+    <a class="h-nav-link" href="dashboard.html">📊 Dashboard Analitik</a>
+    <a class="h-nav-link" href="storymapping.html">📖 Storymapping</a>
+  </nav>
+  <div class="h-right">
+    <span class="h-tag">Kelompok 7</span>
+    <span class="h-tag">2026</span>
+  </div>
+</header>
+
+<div class="app">
+  <div id="sb">
+    <div class="sb-scroll">
+
+      <!-- BASEMAP -->
+      <div class="sec">
+        <div class="sec-ttl">Basemap</div>
+        <div class="bm-grid">
+          <button class="bm-btn on" onclick="switchBM('street')"    id="bm-street">🗺 Street</button>
+          <button class="bm-btn"    onclick="switchBM('topo')"      id="bm-topo">⛰ Topo</button>
+          <button class="bm-btn"    onclick="switchBM('satellite')" id="bm-satellite">🛰 Satelit</button>
+        </div>
+      </div>
+
+      <!-- BATAS WILAYAH -->
+      <div class="sec">
+        <div class="sec-ttl">Batas Wilayah</div>
+        <div class="lr" onclick="toggleLyr('kecamatan')">
+          <button class="sw on" id="sw-kecamatan"></button>
+          <div class="sym-sq" style="background:transparent;border:2px solid #1558a8"></div>
+          <span class="lname on" id="ln-kecamatan">Batas Kelurahan</span>
+        </div>
+        <div class="lr" onclick="toggleLyr('znt')">
+          <button class="sw on" id="sw-znt"></button>
+          <div class="sym-sq" style="background:linear-gradient(135deg,#c83232,#e8a020,#0a5c96)"></div>
+          <span class="lname on" id="ln-znt">Zona Nilai Tanah (ZNT)</span>
+        </div>
+        <div class="sl-row">
+          <span class="sl-lbl">Opasitas ZNT</span>
+          <input type="range" min="10" max="100" value="65" id="op-znt" oninput="setOpZnt(this.value)">
+          <span class="sl-val" id="op-znt-v">65%</span>
+        </div>
+        <div class="sl-row" style="margin-top:5px">
+          <span class="sl-lbl">Opasitas batas</span>
+          <input type="range" min="10" max="100" value="80" id="op-kec" oninput="setOpKec(this.value)">
+          <span class="sl-val" id="op-kec-v">80%</span>
+        </div>
+      </div>
+
+      <!-- AKSESIBILITAS & FASILITAS -->
+      <div class="sec">
+        <div class="sec-ttl">Aksesibilitas & Fasilitas</div>
+        <div class="lr" onclick="toggleLyr('jalan')">
+          <button class="sw" id="sw-jalan"></button>
+          <div class="sym"><svg width="20" height="6" viewBox="0 0 20 6"><rect width="20" height="6" rx="3" fill="#1558a8"/></svg></div>
+          <span class="lname" id="ln-jalan">Jaringan Jalan</span>
+        </div>
+        <div class="lr" onclick="toggleFas('rs')">
+          <button class="sw on" id="sw-rs"></button>
+          <div class="sym"><svg width="16" height="16" viewBox="0 0 16 16"><rect width="16" height="16" rx="3" fill="#d63060"/><rect x="7" y="3" width="2" height="10" rx="1" fill="#fff"/><rect x="3" y="7" width="10" height="2" rx="1" fill="#fff"/></svg></div>
+          <span class="lname on" id="ln-rs">Rumah Sakit</span>
+        </div>
+        <div class="lr" onclick="toggleFas('pendidikan')">
+          <button class="sw on" id="sw-pendidikan"></button>
+          <div class="sym"><svg width="16" height="16" viewBox="0 0 16 16"><polygon points="8,1 15,6 8,11 1,6" fill="#1558a8"/><rect x="5" y="10" width="6" height="5" rx="1" fill="#1558a8"/></svg></div>
+          <span class="lname on" id="ln-pendidikan">Pendidikan</span>
+        </div>
+        <div class="lr" onclick="toggleFas('saranaibadah')">
+          <button class="sw on" id="sw-saranaibadah"></button>
+          <div class="sym"><svg width="16" height="16" viewBox="0 0 16 16"><polygon points="8,0 10,6 16,6 11,10 13,16 8,12 3,16 5,10 0,6 6,6" fill="#b05a00"/></svg></div>
+          <span class="lname on" id="ln-saranaibadah">Sarana Ibadah</span>
+        </div>
+        <div class="lr" onclick="toggleFas('pemerintahan')">
+          <button class="sw on" id="sw-pemerintahan"></button>
+          <div class="sym"><svg width="16" height="16" viewBox="0 0 16 16"><rect x="2" y="8" width="12" height="7" rx="1" fill="#5a30a0"/><rect x="0" y="7" width="16" height="2" rx="1" fill="#5a30a0"/><polygon points="8,0 16,7 0,7" fill="#5a30a0"/><rect x="6" y="10" width="4" height="5" rx="1" fill="#fff" opacity=".5"/></svg></div>
+          <span class="lname on" id="ln-pemerintahan">Pemerintahan</span>
+        </div>
+        <div class="lr" onclick="toggleFas('kantorpos')">
+          <button class="sw on" id="sw-kantorpos"></button>
+          <div class="sym"><svg width="16" height="14" viewBox="0 0 16 14"><rect width="16" height="14" rx="2" fill="#0a7c6e"/><polyline points="0,0 8,7 16,0" fill="none" stroke="#fff" stroke-width="1.5"/></svg></div>
+          <span class="lname on" id="ln-kantorpos">Kantor Pos</span>
+        </div>
+        <div class="lr" onclick="toggleLyr('sampel')">
+          <button class="sw on" id="sw-sampel"></button>
+          <div class="sym"><svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#0a7c6e" opacity=".35" stroke="#0a7c6e" stroke-width="2"/><circle cx="8" cy="8" r="2.5" fill="#0a7c6e"/></svg></div>
+          <span class="lname on" id="ln-sampel">Sampel Harga Tanah</span>
+        </div>
+        <div class="lr" onclick="toggleLyr('heatmap')">
+          <button class="sw on" id="sw-heatmap"></button>
+          <div class="sym"><svg width="16" height="16" viewBox="0 0 16 16"><defs><radialGradient id="hg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#8b0000" stop-opacity="1"/><stop offset="50%" stop-color="#e8a020" stop-opacity="1"/><stop offset="100%" stop-color="#1558a8" stop-opacity="1"/></radialGradient></defs><circle cx="8" cy="8" r="7" fill="url(#hg)"/></svg></div>
+          <span class="lname on" id="ln-heatmap">Heatmap KDE</span>
+        </div>
+      </div>
+
+      <!-- BUFFER PER LAYER -->
+      <div class="sec">
+        <div class="sec-ttl">Buffer Radius</div>
+
+        <!-- Jaringan Jalan -->
+        <div class="buf-layer-item" id="buf-item-jalan">
+          <div class="buf-layer-header">
+            <div class="buf-layer-dot" style="background:#1558a8"></div>
+            <span class="buf-layer-name">Jaringan Jalan</span>
+            <span class="buf-layer-badge" id="buf-badge-jalan">–</span>
+            <button class="buf-toggle-btn" id="buf-toggle-jalan" onclick="toggleBufPanel('jalan')">+ Buffer</button>
+          </div>
+          <div class="buf-radius-row" id="buf-row-jalan">
+            <div class="buf-radius-opts">
+              <button class="buf-r-btn" id="buf-jalan-100" onclick="setLayerBuffer('jalan',100)">100m</button>
+              <button class="buf-r-btn" id="buf-jalan-250" onclick="setLayerBuffer('jalan',250)">250m</button>
+              <button class="buf-r-btn" id="buf-jalan-500" onclick="setLayerBuffer('jalan',500)">500m</button>
+            </div>
+            <button class="reset-btn" style="width:auto;padding:3px 8px;font-size:9px" onclick="clearLayerBuffer('jalan')">✕</button>
+          </div>
+        </div>
+
+        <!-- Rumah Sakit -->
+        <div class="buf-layer-item" id="buf-item-rs">
+          <div class="buf-layer-header">
+            <div class="buf-layer-dot" style="background:#d63060"></div>
+            <span class="buf-layer-name">Rumah Sakit</span>
+            <span class="buf-layer-badge" id="buf-badge-rs">–</span>
+            <button class="buf-toggle-btn" id="buf-toggle-rs" onclick="toggleBufPanel('rs')">+ Buffer</button>
+          </div>
+          <div class="buf-radius-row" id="buf-row-rs">
+            <div class="buf-radius-opts">
+              <button class="buf-r-btn" id="buf-rs-250" onclick="setLayerBuffer('rs',250)">250m</button>
+              <button class="buf-r-btn" id="buf-rs-500" onclick="setLayerBuffer('rs',500)">500m</button>
+              <button class="buf-r-btn" id="buf-rs-1000" onclick="setLayerBuffer('rs',1000)">1km</button>
+            </div>
+            <button class="reset-btn" style="width:auto;padding:3px 8px;font-size:9px" onclick="clearLayerBuffer('rs')">✕</button>
+          </div>
+        </div>
+
+        <!-- Pendidikan -->
+        <div class="buf-layer-item" id="buf-item-pendidikan">
+          <div class="buf-layer-header">
+            <div class="buf-layer-dot" style="background:#1558a8"></div>
+            <span class="buf-layer-name">Pendidikan</span>
+            <span class="buf-layer-badge" id="buf-badge-pendidikan">–</span>
+            <button class="buf-toggle-btn" id="buf-toggle-pendidikan" onclick="toggleBufPanel('pendidikan')">+ Buffer</button>
+          </div>
+          <div class="buf-radius-row" id="buf-row-pendidikan">
+            <div class="buf-radius-opts">
+              <button class="buf-r-btn" id="buf-pendidikan-250" onclick="setLayerBuffer('pendidikan',250)">250m</button>
+              <button class="buf-r-btn" id="buf-pendidikan-500" onclick="setLayerBuffer('pendidikan',500)">500m</button>
+              <button class="buf-r-btn" id="buf-pendidikan-1000" onclick="setLayerBuffer('pendidikan',1000)">1km</button>
+            </div>
+            <button class="reset-btn" style="width:auto;padding:3px 8px;font-size:9px" onclick="clearLayerBuffer('pendidikan')">✕</button>
+          </div>
+        </div>
+
+        <!-- Sarana Ibadah -->
+        <div class="buf-layer-item" id="buf-item-saranaibadah">
+          <div class="buf-layer-header">
+            <div class="buf-layer-dot" style="background:#b05a00"></div>
+            <span class="buf-layer-name">Sarana Ibadah</span>
+            <span class="buf-layer-badge" id="buf-badge-saranaibadah">–</span>
+            <button class="buf-toggle-btn" id="buf-toggle-saranaibadah" onclick="toggleBufPanel('saranaibadah')">+ Buffer</button>
+          </div>
+          <div class="buf-radius-row" id="buf-row-saranaibadah">
+            <div class="buf-radius-opts">
+              <button class="buf-r-btn" id="buf-saranaibadah-250" onclick="setLayerBuffer('saranaibadah',250)">250m</button>
+              <button class="buf-r-btn" id="buf-saranaibadah-500" onclick="setLayerBuffer('saranaibadah',500)">500m</button>
+              <button class="buf-r-btn" id="buf-saranaibadah-1000" onclick="setLayerBuffer('saranaibadah',1000)">1km</button>
+            </div>
+            <button class="reset-btn" style="width:auto;padding:3px 8px;font-size:9px" onclick="clearLayerBuffer('saranaibadah')">✕</button>
+          </div>
+        </div>
+
+        <!-- Pemerintahan -->
+        <div class="buf-layer-item" id="buf-item-pemerintahan">
+          <div class="buf-layer-header">
+            <div class="buf-layer-dot" style="background:#5a30a0"></div>
+            <span class="buf-layer-name">Pemerintahan</span>
+            <span class="buf-layer-badge" id="buf-badge-pemerintahan">–</span>
+            <button class="buf-toggle-btn" id="buf-toggle-pemerintahan" onclick="toggleBufPanel('pemerintahan')">+ Buffer</button>
+          </div>
+          <div class="buf-radius-row" id="buf-row-pemerintahan">
+            <div class="buf-radius-opts">
+              <button class="buf-r-btn" id="buf-pemerintahan-250" onclick="setLayerBuffer('pemerintahan',250)">250m</button>
+              <button class="buf-r-btn" id="buf-pemerintahan-500" onclick="setLayerBuffer('pemerintahan',500)">500m</button>
+              <button class="buf-r-btn" id="buf-pemerintahan-1000" onclick="setLayerBuffer('pemerintahan',1000)">1km</button>
+            </div>
+            <button class="reset-btn" style="width:auto;padding:3px 8px;font-size:9px" onclick="clearLayerBuffer('pemerintahan')">✕</button>
+          </div>
+        </div>
+
+        <!-- Kantor Pos -->
+        <div class="buf-layer-item" id="buf-item-kantorpos">
+          <div class="buf-layer-header">
+            <div class="buf-layer-dot" style="background:#0a7c6e"></div>
+            <span class="buf-layer-name">Kantor Pos</span>
+            <span class="buf-layer-badge" id="buf-badge-kantorpos">–</span>
+            <button class="buf-toggle-btn" id="buf-toggle-kantorpos" onclick="toggleBufPanel('kantorpos')">+ Buffer</button>
+          </div>
+          <div class="buf-radius-row" id="buf-row-kantorpos">
+            <div class="buf-radius-opts">
+              <button class="buf-r-btn" id="buf-kantorpos-250" onclick="setLayerBuffer('kantorpos',250)">250m</button>
+              <button class="buf-r-btn" id="buf-kantorpos-500" onclick="setLayerBuffer('kantorpos',500)">500m</button>
+              <button class="buf-r-btn" id="buf-kantorpos-1000" onclick="setLayerBuffer('kantorpos',1000)">1km</button>
+            </div>
+            <button class="reset-btn" style="width:auto;padding:3px 8px;font-size:9px" onclick="clearLayerBuffer('kantorpos')">✕</button>
+          </div>
+        </div>
+
+        <button class="buf-clear-all" onclick="clearAllBuffers()">✕ Hapus Semua Buffer</button>
+      </div>
+
+      <!-- FILTER -->
+      <div class="sec">
+        <div class="sec-ttl">Filter Interaktif</div>
+        <div class="fg">
+          <label>Kelurahan</label>
+          <select id="f-kel" onchange="applyFilter()">
+            <option value="all">Semua Kelurahan</option>
+            <option value="Kotabaru">Kotabaru</option>
+            <option value="Demangan">Demangan</option>
+            <option value="Klitren">Klitren</option>
+            <option value="Baciro">Baciro</option>
+            <option value="Terban">Terban</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Kelas Nilai ZNT</label>
+          <select id="f-kelas" onchange="applyFilter()">
+            <option value="all">Semua Kelas</option>
+            <option value="sangat-tinggi">Sangat Tinggi</option>
+            <option value="tinggi">Tinggi</option>
+            <option value="rendah">Rendah</option>
+            <option value="sangat-rendah">Sangat Rendah</option>
+          </select>
+        </div>
+        <button class="reset-btn" onclick="resetFilter()">↺ Reset Filter</button>
+      </div>
+
+    </div>
+    <div class="sb-footer">DEPT. TEKNIK GEOMATIKA · ITS · 2026</div>
+  </div>
+
+  <!-- MAP -->
+  <div id="mwrap">
+    <div id="map"></div>
+    <div class="stats">
+      <div class="sc"><span class="sc-v">399</span><span class="sc-l">Ha Luas</span></div>
+      <div class="sc"><span class="sc-v" id="sc-s">16</span><span class="sc-l">Sampel</span></div>
+      <div class="sc"><span class="sc-v">5</span><span class="sc-l">Kelurahan</span></div>
+      <div class="sc"><span class="sc-v" id="sc-fas">0</span><span class="sc-l">Fasilitas</span></div>
+    </div>
+
+    <div id="legend-float">
+      <div class="leg-ttl">Legenda</div>
+      <div id="legend-wrap"><div class="leg-empty">Aktifkan layer untuk legenda.</div></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+<script>
+const map = L.map('map',{center:[-7.781,110.383],zoom:15,zoomControl:false});
+L.control.zoom({position:'bottomright'}).addTo(map);
+
+const BM={
+  street:  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap',maxZoom:19}),
+  topo:    L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenTopoMap',maxZoom:17}),
+  satellite:L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'&copy; Esri',maxZoom:19})
+};
+let activeBM='street'; BM.street.addTo(map);
+function switchBM(n){
+  if(activeBM===n)return;
+  map.removeLayer(BM[activeBM]);BM[n].addTo(map);BM[n].bringToBack();
+  activeBM=n;
+  document.querySelectorAll('.bm-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('bm-'+n).classList.add('on');
+}
+
+const ZNT_CFG={
+  1:{color:'#7a0000',fillColor:'#c83232',label:'Sangat Tinggi',kelas:'sangat-tinggi'},
+  2:{color:'#7a3a00',fillColor:'#e8a020',label:'Tinggi',       kelas:'tinggi'},
+  3:{color:'#0d4a20',fillColor:'#28c080',label:'Rendah',       kelas:'rendah'},
+  4:{color:'#08306e',fillColor:'#2878d0',label:'Sangat Rendah',kelas:'sangat-rendah'}
+};
+function zntCfg(gc){return ZNT_CFG[gc]||ZNT_CFG[4]}
+
+const KELAS_CFG={
+  'sangat-tinggi':{color:'#c83232',label:'Sangat Tinggi',range:'> Rp 20 jt/m²'},
+  'tinggi':       {color:'#e8a020',label:'Tinggi',        range:'Rp 10–20 jt/m²'},
+  'rendah':       {color:'#28c080',label:'Rendah',        range:'Rp 5–10 jt/m²'},
+  'sangat-rendah':{color:'#2878d0',label:'Sangat Rendah', range:'< Rp 5 jt/m²'}
+};
+function hargaToKelas(h){
+  if(h>20000000)return'sangat-tinggi';
+  if(h>10000000)return'tinggi';
+  if(h>5000000) return'rendah';
+  return'sangat-rendah';
+}
+
+const FAS_CFG={
+  rs:          {color:'#d63060',label:'Rumah Sakit'},
+  pendidikan:  {color:'#1558a8',label:'Pendidikan'},
+  saranaibadah:{color:'#b05a00',label:'Sarana Ibadah'},
+  pemerintahan:{color:'#5a30a0',label:'Pemerintahan'},
+  kantorpos:   {color:'#0a7c6e',label:'Kantor Pos'}
+};
+
+// Buffer config per layer: color and label
+const BUF_CFG={
+  jalan:       {color:'#1558a8',label:'Jaringan Jalan'},
+  rs:          {color:'#d63060',label:'Rumah Sakit'},
+  pendidikan:  {color:'#1558a8',label:'Pendidikan'},
+  saranaibadah:{color:'#b05a00',label:'Sarana Ibadah'},
+  pemerintahan:{color:'#5a30a0',label:'Pemerintahan'},
+  kantorpos:   {color:'#0a7c6e',label:'Kantor Pos'}
+};
+
+function makeFasIcon(type){
+  const cfg=FAS_CFG[type];
+  const svgs={
+    rs:     `<svg width="18" height="18" viewBox="0 0 18 18"><rect width="18" height="18" rx="3" fill="${cfg.color}"/><rect x="8" y="3" width="2" height="12" rx="1" fill="#fff"/><rect x="3" y="8" width="12" height="2" rx="1" fill="#fff"/></svg>`,
+    pendidikan:`<svg width="18" height="18" viewBox="0 0 18 18"><polygon points="9,1 17,7 9,13 1,7" fill="${cfg.color}"/><rect x="6" y="12" width="6" height="5" rx="1" fill="${cfg.color}"/></svg>`,
+    saranaibadah:`<svg width="18" height="18" viewBox="0 0 18 18"><polygon points="9,0 11,7 18,7 13,11 15,18 9,14 3,18 5,11 0,7 7,7" fill="${cfg.color}"/></svg>`,
+    pemerintahan:`<svg width="18" height="18" viewBox="0 0 18 18"><rect x="2" y="9" width="14" height="8" rx="1" fill="${cfg.color}"/><rect x="0" y="8" width="18" height="2.5" rx="1" fill="${cfg.color}"/><polygon points="9,0 18,8 0,8" fill="${cfg.color}"/><rect x="7" y="12" width="4" height="5" rx="1" fill="#fff" opacity=".5"/></svg>`,
+    kantorpos:`<svg width="18" height="15" viewBox="0 0 18 15"><rect width="18" height="15" rx="2.5" fill="${cfg.color}"/><polyline points="0,0 9,8 18,0" fill="none" stroke="#fff" stroke-width="2"/></svg>`
+  };
+  return L.divIcon({
+    className:'',
+    html:`<div style="filter:drop-shadow(0 2px 6px rgba(0,0,0,.4))">${svgs[type]}</div>`,
+    iconSize:[18,18],iconAnchor:[9,9]
+  });
+}
+
+const KEL_BOUNDS={
+  'Kotabaru':  [[-7.773,110.377],[-7.783,110.390]],
+  'Demangan':  [[-7.781,110.378],[-7.791,110.390]],
+  'Klitren':   [[-7.779,110.380],[-7.789,110.392]],
+  'Baciro':    [[-7.783,110.380],[-7.795,110.396]],
+  'Terban':    [[-7.769,110.374],[-7.782,110.390]]
+};
+const KEL_COLORS={
+  'Kotabaru':'#1558a8','Demangan':'#0a9e7c','Klitren':'#6b30c0',
+  'Baciro':'#c87800','Terban':'#d63060'
+};
+const KEL_LUAS={
+  'Kotabaru':'0,72 km²','Demangan':'0,74 km²','Klitren':'0,68 km²',
+  'Baciro':'1,06 km²','Terban':'0,80 km²'
+};
+
+function getKelurahan(lat,lng){
+  if(lat>-7.783&&lat<-7.769&&lng>110.374&&lng<110.390)return'Kotabaru';
+  if(lat>-7.791&&lat<-7.780&&lng>110.378&&lng<110.388&&lng<110.389)return'Demangan';
+  if(lat>-7.789&&lat<-7.778&&lng>110.380&&lng<110.392)return'Klitren';
+  if(lat>-7.795&&lat<-7.783&&lng>110.379&&lng<110.396)return'Baciro';
+  if(lat>-7.782&&lat<-7.769&&lng>110.373&&lng<110.388)return'Terban';
+  return'Gondokusuman';
+}
+
+const LS={kecamatan:true,znt:true,jalan:false,sampel:true,heatmap:true,
+          rs:true,pendidikan:true,saranaibadah:true,pemerintahan:true,kantorpos:true};
+
+let kecGroup   =L.layerGroup().addTo(map);
+let zntGroup   =L.layerGroup().addTo(map);
+let jalanGroup =L.layerGroup();
+let sampelGroup=L.layerGroup().addTo(map);
+let heatLayer  =null;
+
+// Buffer groups — one per layer type
+const bufGroups={
+  jalan:       L.layerGroup().addTo(map),
+  rs:          L.layerGroup().addTo(map),
+  pendidikan:  L.layerGroup().addTo(map),
+  saranaibadah:L.layerGroup().addTo(map),
+  pemerintahan:L.layerGroup().addTo(map),
+  kantorpos:   L.layerGroup().addTo(map)
+};
+// Active radius per layer (null = no buffer)
+const activeBufferRadius={
+  jalan:null,rs:null,pendidikan:null,saranaibadah:null,pemerintahan:null,kantorpos:null
+};
+// Panel open/closed
+const bufPanelOpen={
+  jalan:false,rs:false,pendidikan:false,saranaibadah:false,pemerintahan:false,kantorpos:false
+};
+
+const fasGroups={
+  rs:L.layerGroup().addTo(map),pendidikan:L.layerGroup().addTo(map),
+  saranaibadah:L.layerGroup().addTo(map),pemerintahan:L.layerGroup().addTo(map),
+  kantorpos:L.layerGroup().addTo(map)
+};
+
+let allSampelMarkers=[];
+let allFasMarkers=[];
+let allZntLayers=[];
+let kecLayersList=[];
+let jalanLayers=[];
+let kecOpacity=0.8,zntOpacity=0.65;
+let fasCount=0;
+
+const SAMPEL=[
+  {lat:-7.785770,lng:110.372132,harga:28220858,faktor:'Koridor Jalan Solo, komersial tinggi'},
+  {lat:-7.788049,lng:110.377454,harga:32908704,faktor:'Dekat RS & pusat kota Kotabaru'},
+  {lat:-7.783184,lng:110.380980,harga:45774647,faktor:'Koridor Urip Sumoharjo, bisnis utama'},
+  {lat:-7.790371,lng:110.393521,harga:10000000,faktor:'Pemukiman, akses sedang'},
+  {lat:-7.791459,lng:110.385931,harga:13636363,faktor:'Dekat sekolah & jalan kolektor'},
+  {lat:-7.792958,lng:110.383611,harga:8438735, faktor:'Permukiman dalam, jauh jalan utama'},
+  {lat:-7.791143,lng:110.384322,harga:15302013,faktor:'Dekat fasilitas pendidikan'},
+  {lat:-7.790855,lng:110.388609,harga:9803921, faktor:'Permukiman padat Baciro'},
+  {lat:-7.782353,lng:110.385220,harga:12419006,faktor:'Dekat Demangan, akses baik'},
+  {lat:-7.781830,lng:110.382919,harga:12500000,faktor:'Koridor Demangan'},
+  {lat:-7.786477,lng:110.392704,harga:5615384, faktor:'Pinggiran, aksesibilitas terbatas'},
+  {lat:-7.786161,lng:110.391662,harga:6881720, faktor:'Baciro timur, jauh jalan utama'},
+  {lat:-7.782939,lng:110.387293,harga:10000000,faktor:'Dekat fasilitas umum Klitren'},
+  {lat:-7.780121,lng:110.376387,harga:21481481,faktor:'Kotabaru heritage, nilai tinggi'},
+  {lat:-7.780968,lng:110.379145,harga:47000000,faktor:'Pusat Kotabaru, komersial premium'},
+  {lat:-7.783300,lng:110.379334,harga:56818181,faktor:'Jalan utama Kotabaru, nilai tertinggi'}
+];
+
+const ZNT_DATA={"type":"FeatureCollection","features":[
+  {"type":"Feature","properties":{"OBJECTID":1,"gridcode":1},"geometry":{"type":"Polygon","coordinates":[[[110.372,-7.778],[110.378,-7.778],[110.378,-7.784],[110.372,-7.784],[110.372,-7.778]]]}},
+  {"type":"Feature","properties":{"OBJECTID":2,"gridcode":2},"geometry":{"type":"Polygon","coordinates":[[[110.378,-7.778],[110.386,-7.778],[110.386,-7.787],[110.378,-7.787],[110.378,-7.778]]]}},
+  {"type":"Feature","properties":{"OBJECTID":3,"gridcode":3},"geometry":{"type":"Polygon","coordinates":[[[110.386,-7.778],[110.396,-7.778],[110.396,-7.789],[110.386,-7.789],[110.386,-7.778]]]}},
+  {"type":"Feature","properties":{"OBJECTID":4,"gridcode":4},"geometry":{"type":"Polygon","coordinates":[[[110.372,-7.784],[110.386,-7.784],[110.386,-7.796],[110.372,-7.796],[110.372,-7.784]]]}},
+  {"type":"Feature","properties":{"OBJECTID":5,"gridcode":2},"geometry":{"type":"Polygon","coordinates":[[[110.386,-7.789],[110.396,-7.789],[110.396,-7.796],[110.386,-7.796],[110.386,-7.789]]]}}
+]};
+
+function mkPopup(title,rows,accent){
+  const dot=accent?`<span class="pu-icon-circ" style="background:${accent}"></span>`:'';
+  let h=`<div class="pu-head">${dot}${title}</div>`;
+  rows.forEach(([k,v])=>{h+=`<div class="pu-row"><span class="pu-k">${k}</span><span class="pu-v">${v}</span></div>`});
+  return h;
+}
+
+async function fetchGJ(path){
+  try{const r=await fetch(path);if(!r.ok)throw 0;return await r.json()}
+  catch{return null}
+}
+
+async function loadKec(){
+  const data=await fetchGJ('data/kecamatan.geojson');
+  if(!data){
+    Object.entries(KEL_BOUNDS).forEach(([nm,bounds])=>{
+      const col=KEL_COLORS[nm];
+      const r=L.rectangle(bounds,{color:col,weight:2,fill:true,fillColor:col,fillOpacity:0.06,opacity:kecOpacity});
+      r.bindTooltip(nm,{className:'ll-tip',sticky:true});
+      r.bindPopup(mkPopup(nm,[['Kecamatan','Gondokusuman'],['Luas',KEL_LUAS[nm]]],col));
+      r.on('mouseover',function(){this.setStyle({fillOpacity:0.18})});
+      r.on('mouseout', function(){this.setStyle({fillOpacity:0.06})});
+      r._kelNama=nm;
+      kecGroup.addLayer(r);kecLayersList.push(r);
+    });
+    return;
+  }
+  L.geoJSON(data,{
+    style:f=>{
+      const nm=f.properties.NAME_4||f.properties.NAMOBJ||f.properties.name||'';
+      const col=KEL_COLORS[nm]||'#1558a8';
+      return{color:col,weight:2.5,fillColor:col,fillOpacity:0.08,opacity:kecOpacity};
+    },
+    onEachFeature:(f,lyr)=>{
+      const nm=f.properties.NAME_4||f.properties.NAMOBJ||f.properties.name||'Kelurahan';
+      const col=KEL_COLORS[nm]||'#1558a8';
+      lyr.bindTooltip(nm,{className:'ll-tip',sticky:true});
+      lyr.bindPopup(mkPopup(nm,[['Kecamatan','Gondokusuman'],['Luas',KEL_LUAS[nm]||'-']],col));
+      lyr.on('mouseover',function(){this.setStyle({fillOpacity:0.22})});
+      lyr.on('mouseout', function(){this.setStyle({fillOpacity:0.08})});
+      lyr._kelNama=nm;
+      kecLayersList.push(lyr);
+    }
+  }).addTo(kecGroup);
+}
+
+async function loadZnt(){
+  let data=await fetchGJ('data/znt.geojson');
+  if(!data)data=ZNT_DATA;
+  allZntLayers=[];
+  L.geoJSON(data,{
+    style:f=>{
+      const gc=f.properties.gridcode||4;
+      const cfg=zntCfg(gc);
+      return{color:cfg.color,weight:1.8,fillColor:cfg.fillColor,fillOpacity:zntOpacity,opacity:1};
+    },
+    onEachFeature:(f,lyr)=>{
+      const gc=f.properties.gridcode||4;
+      const cfg=zntCfg(gc);
+      lyr._zntKelas=cfg.kelas;lyr._gc=gc;
+      let kel='Gondokusuman';
+      try{const ll=lyr.getBounds().getCenter();kel=getKelurahan(ll.lat,ll.lng);}catch(e){}
+      lyr._kel=kel;
+      lyr.bindTooltip(`ZNT — ${cfg.label}`,{className:'ll-tip',sticky:true});
+      lyr.bindPopup(mkPopup('Zona Nilai Tanah',[
+        ['Kelas',`<span class="pu-badge" style="background:${cfg.fillColor}22;color:${cfg.fillColor};border:1px solid ${cfg.color}55">${cfg.label}</span>`],
+        ['Kelurahan',kel],
+        ['Estimasi Harga',cfg.kelas==='sangat-tinggi'?'> Rp 20 jt/m²':cfg.kelas==='tinggi'?'Rp 10–20 jt/m²':cfg.kelas==='rendah'?'Rp 5–10 jt/m²':'< Rp 5 jt/m²'],
+        ['Luas',f.properties.Shape_Area?(f.properties.Shape_Area/10000).toFixed(3)+' Ha':'-']
+      ],cfg.fillColor));
+      lyr.on('mouseover',function(){this.setStyle({fillOpacity:Math.min(zntOpacity+0.2,1)})});
+      lyr.on('mouseout', function(){this.setStyle({fillOpacity:zntOpacity})});
+      allZntLayers.push(lyr);
+      zntGroup.addLayer(lyr);
+    }
+  });
+}
+
+async function loadJalan(){
+  const data=await fetchGJ('data/jalan.geojson');
+  if(!data)return;
+  const jCfg={arteri:{color:'#0a2d60',weight:4},kolektor:{color:'#8b3a00',weight:2.5},lokal:{color:'#2a5030',weight:1.8},lain:{color:'#4a4a5a',weight:1.2}};
+  const gjLayer=L.geoJSON(data,{
+    style:f=>{
+      const r=(f.properties.REMARK||f.properties.type||'').toLowerCase();
+      const s=r.includes('arteri')?jCfg.arteri:r.includes('kolektor')?jCfg.kolektor:r.includes('lokal')?jCfg.lokal:jCfg.lain;
+      return{...s,opacity:0.88};
+    },
+    onEachFeature:(f,lyr)=>{
+      const nm=f.properties.NAMOBJ||f.properties.name||'Jalan';
+      lyr.bindTooltip(nm,{className:'ll-tip',sticky:true});
+      lyr.bindPopup(mkPopup(nm,[['Kelas',f.properties.REMARK||'-']],null));
+      jalanLayers.push(lyr);
+    }
+  }).addTo(jalanGroup);
+}
+
+async function loadFas(key,file){
+  const data=await fetchGJ('data/'+file);
+  if(!data)return;
+  const icon=makeFasIcon(key);
+  const cfg=FAS_CFG[key];
+  data.features.forEach(f=>{
+    let lat,lng;const g=f.geometry;if(!g)return;
+    if(g.type==='Point'){[lng,lat]=g.coordinates}
+    else if(g.type==='Polygon'||g.type==='MultiPolygon'){
+      const c=g.type==='Polygon'?g.coordinates[0]:g.coordinates[0][0];
+      lng=c.reduce((s,p)=>s+p[0],0)/c.length;lat=c.reduce((s,p)=>s+p[1],0)/c.length;
+    }else return;
+    const nm=f.properties.NAMOBJ||f.properties.name||cfg.label;
+    const m=L.marker([lat,lng],{icon});
+    m.bindTooltip(nm,{className:'ll-tip'});
+    m.bindPopup(mkPopup(nm,[
+      ['Kategori',`<span class="pu-badge" style="background:${cfg.color}18;color:${cfg.color};border:1px solid ${cfg.color}55">${cfg.label}</span>`]
+    ],cfg.color));
+    m._fasType=key;m._lat=lat;m._lng=lng;
+    fasGroups[key].addLayer(m);fasCount++;allFasMarkers.push(m);
+  });
+  document.getElementById('sc-fas').textContent=fasCount;
+}
+
+function buildHeat(){
+  if(heatLayer)map.removeLayer(heatLayer);
+  const maxH=Math.max(...SAMPEL.map(s=>s.harga));
+  const pts=SAMPEL.map(s=>[s.lat,s.lng,s.harga/maxH]);
+  heatLayer=L.heatLayer(pts,{
+    radius:60,blur:35,maxZoom:17,max:1,minOpacity:0.6,
+    gradient:{0.0:'#1558a8',0.25:'#2878d0',0.45:'#28c080',0.65:'#e8a020',0.85:'#c83232',1.0:'#7a0000'}
+  });
+  if(LS.heatmap)heatLayer.addTo(map);
+}
+
+function buildSampel(){
+  sampelGroup.clearLayers();allSampelMarkers=[];
+  SAMPEL.forEach((s,i)=>{
+    const kelas=hargaToKelas(s.harga);
+    const cfg=KELAS_CFG[kelas];
+    const maxH=56818181;
+    const r=Math.max(5,Math.min(14,5+(s.harga/maxH)*9));
+    const kel=getKelurahan(s.lat,s.lng);
+    const hargaFmt='Rp '+s.harga.toLocaleString('id-ID')+'/m²';
+    const c=L.circleMarker([s.lat,s.lng],{radius:r,color:cfg.color,weight:2.5,fillColor:cfg.color,fillOpacity:0.75});
+    c.bindTooltip(`<b>${cfg.label}</b> · ${hargaFmt}`,{className:'ll-tip',sticky:true});
+    c.bindPopup(mkPopup('Sampel Harga Tanah',[
+      ['Harga',`<b>${hargaFmt}</b>`],
+      ['Kelas',`<span class="pu-badge" style="background:${cfg.color}25;color:${cfg.color};border:1px solid ${cfg.color}66;font-weight:700">${cfg.label}</span>`],
+      ['Faktor Dominan',s.faktor]
+    ],cfg.color));
+    c._kel=kel;c._kelas=kelas;c._harga=s.harga;c._idx=i;
+    sampelGroup.addLayer(c);allSampelMarkers.push(c);
+  });
+  document.getElementById('sc-s').textContent=allSampelMarkers.length;
+}
+
+// ─── BUFFER PER LAYER ───
+function toggleBufPanel(key){
+  bufPanelOpen[key]=!bufPanelOpen[key];
+  const item=document.getElementById('buf-item-'+key);
+  const btn=document.getElementById('buf-toggle-'+key);
+  if(bufPanelOpen[key]){
+    item.classList.add('active');
+    btn.classList.add('on');
+    btn.textContent='− Buffer';
+  } else {
+    item.classList.remove('active');
+    btn.classList.remove('on');
+    btn.textContent='+ Buffer';
+    clearLayerBuffer(key);
+  }
+}
+
+function setLayerBuffer(key,radius){
+  // Clear old buffer for this layer
+  bufGroups[key].clearLayers();
+  activeBufferRadius[key]=radius;
+
+  // Update radius button states
+  const radii={jalan:[100,250,500],rs:[250,500,1000],pendidikan:[250,500,1000],
+               saranaibadah:[250,500,1000],pemerintahan:[250,500,1000],kantorpos:[250,500,1000]};
+  (radii[key]||[]).forEach(r=>{
+    const btn=document.getElementById(`buf-${key}-${r}`);
+    if(btn)btn.classList.toggle('on',r===radius);
+  });
+
+  const cfg=BUF_CFG[key];
+  const radLabel=radius>=1000?(radius/1000)+'km':radius+'m';
+  const badge=document.getElementById('buf-badge-'+key);
+  if(badge){badge.textContent=radLabel}
+
+  if(key==='jalan'){
+    // Buffer along jalan segments: place circles at interpolated points
+    jalanLayers.forEach(lyr=>{
+      if(lyr.getLatLngs){
+        const lls=lyr.getLatLngs().flat?lyr.getLatLngs().flat():lyr.getLatLngs();
+        // Place a buffer circle every ~100m along the line
+        lls.forEach(ll=>{
+          bufGroups[key].addLayer(L.circle([ll.lat,ll.lng],{
+            radius:radius,color:cfg.color,weight:1.5,
+            fillColor:cfg.color,fillOpacity:0.07,dashArray:'5 3'
+          }));
+        });
+      }
+    });
+    // If no jalan loaded, use fallback points representing main roads
+    if(jalanLayers.length===0){
+      const roadPts=[
+        [-7.780,110.374],[-7.781,110.376],[-7.782,110.378],[-7.783,110.380],
+        [-7.784,110.382],[-7.785,110.384],[-7.786,110.386],[-7.787,110.388],
+        [-7.788,110.390],[-7.783,110.375],[-7.784,110.377],[-7.785,110.379],
+        [-7.786,110.381],[-7.790,110.380],[-7.791,110.382],[-7.792,110.384]
+      ];
+      roadPts.forEach(([lat,lng])=>{
+        bufGroups[key].addLayer(L.circle([lat,lng],{
+          radius:radius,color:cfg.color,weight:1.5,
+          fillColor:cfg.color,fillOpacity:0.07,dashArray:'5 3'
+        }));
+      });
+    }
+  } else {
+    // Buffer around facility markers of this type
+    let sources=allFasMarkers.filter(m=>m._fasType===key);
+    if(sources.length===0){
+      // Fallback demo points if GeoJSON not loaded
+      const fallback={
+        rs:         [[-7.782,110.381],[-7.786,110.376]],
+        pendidikan: [[-7.784,110.383],[-7.789,110.387],[-7.780,110.379]],
+        saranaibadah:[[-7.783,110.385],[-7.787,110.381],[-7.791,110.389],[-7.778,110.377]],
+        pemerintahan:[[-7.781,110.382],[-7.790,110.385]],
+        kantorpos:  [[-7.784,110.380],[-7.789,110.388]]
+      };
+      (fallback[key]||[]).forEach(([lat,lng])=>{
+        bufGroups[key].addLayer(L.circle([lat,lng],{
+          radius:radius,color:cfg.color,weight:1.5,
+          fillColor:cfg.color,fillOpacity:0.10,dashArray:'6 3'
+        }));
+      });
+    } else {
+      sources.forEach(m=>{
+        bufGroups[key].addLayer(L.circle([m._lat,m._lng],{
+          radius:radius,color:cfg.color,weight:1.5,
+          fillColor:cfg.color,fillOpacity:0.10,dashArray:'6 3'
+        }));
+      });
+    }
+  }
+  updateLegend();
+}
+
+function clearLayerBuffer(key){
+  bufGroups[key].clearLayers();
+  activeBufferRadius[key]=null;
+  const radii={jalan:[100,250,500],rs:[250,500,1000],pendidikan:[250,500,1000],
+               saranaibadah:[250,500,1000],pemerintahan:[250,500,1000],kantorpos:[250,500,1000]};
+  (radii[key]||[]).forEach(r=>{
+    const btn=document.getElementById(`buf-${key}-${r}`);
+    if(btn)btn.classList.remove('on');
+  });
+  const badge=document.getElementById('buf-badge-'+key);
+  if(badge)badge.textContent='–';
+  updateLegend();
+}
+
+function clearAllBuffers(){
+  Object.keys(bufGroups).forEach(key=>{
+    bufGroups[key].clearLayers();
+    activeBufferRadius[key]=null;
+    bufPanelOpen[key]=false;
+    const item=document.getElementById('buf-item-'+key);
+    const btn=document.getElementById('buf-toggle-'+key);
+    if(item)item.classList.remove('active');
+    if(btn){btn.classList.remove('on');btn.textContent='+ Buffer';}
+    const badge=document.getElementById('buf-badge-'+key);
+    if(badge)badge.textContent='–';
+    const radii={jalan:[100,250,500],rs:[250,500,1000],pendidikan:[250,500,1000],
+                 saranaibadah:[250,500,1000],pemerintahan:[250,500,1000],kantorpos:[250,500,1000]};
+    (radii[key]||[]).forEach(r=>{
+      const b=document.getElementById(`buf-${key}-${r}`);
+      if(b)b.classList.remove('on');
+    });
+  });
+  updateLegend();
+}
+
+// ─── LEGEND ───
+function updateLegend(){
+  const w=document.getElementById('legend-wrap');
+  let html='',empty=true;
+
+  if(LS.znt){
+    empty=false;
+    html+=`<div class="leg-group-title">Zona Nilai Tanah (ZNT)</div>`;
+    [[1,'Sangat Tinggi','#c83232','#7a0000'],[2,'Tinggi','#e8a020','#7a3a00'],[3,'Rendah','#28c080','#0d4a20'],[4,'Sangat Rendah','#2878d0','#08306e']].forEach(([gc,lbl,fill,stroke])=>{
+      html+=`<div class="leg-item"><div class="leg-box" style="background:${fill};border:2px solid ${stroke}"></div><span class="leg-txt">${lbl}</span></div>`;
+    });
+  }
+
+  if(LS.sampel){
+    empty=false;if(html)html+=`<div class="leg-sep"></div>`;
+    html+=`<div class="leg-group-title">Sampel Harga Tanah</div>`;
+    Object.entries(KELAS_CFG).forEach(([k,cfg])=>{
+      html+=`<div class="leg-item">
+        <svg width="14" height="14" viewBox="0 0 14 14" style="flex-shrink:0">
+          <circle cx="7" cy="7" r="6" fill="${cfg.color}" fill-opacity="0.75" stroke="${cfg.color}" stroke-width="2.5"/>
+        </svg>
+        <span class="leg-txt">${cfg.label}</span>
+        <span class="leg-val">${cfg.range}</span>
+      </div>`;
+    });
+  }
+
+  if(LS.heatmap){
+    empty=false;if(html)html+=`<div class="leg-sep"></div>`;
+    html+=`<div class="leg-group-title">Heatmap KDE</div>`;
+    html+=`<div style="height:10px;border-radius:3px;background:linear-gradient(90deg,#1558a8,#28c080,#e8a020,#c83232,#7a0000);margin-bottom:3px"></div>`;
+    html+=`<div style="display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:7.5px;color:var(--txt3)"><span>Rendah</span><span>Tinggi</span></div>`;
+  }
+
+  const aktifFas=Object.keys(FAS_CFG).filter(k=>LS[k]);
+  if(aktifFas.length>0){
+    empty=false;if(html)html+=`<div class="leg-sep"></div>`;
+    html+=`<div class="leg-group-title">Fasilitas</div>`;
+    aktifFas.forEach(k=>{
+      const cfg=FAS_CFG[k];
+      html+=`<div class="leg-item"><div style="width:14px;height:14px;border-radius:2.5px;background:${cfg.color};flex-shrink:0;box-shadow:0 1px 3px rgba(0,0,0,.3)"></div><span class="leg-txt">${cfg.label}</span></div>`;
+    });
+  }
+
+  if(LS.kecamatan){
+    empty=false;if(html)html+=`<div class="leg-sep"></div>`;
+    html+=`<div class="leg-group-title">Batas Kelurahan</div>`;
+    Object.entries(KEL_COLORS).forEach(([nm,col])=>{
+      html+=`<div class="leg-item"><div style="width:20px;height:3.5px;border-radius:2px;background:${col};flex-shrink:0"></div><span class="leg-txt">${nm}</span></div>`;
+    });
+  }
+
+  if(LS.jalan){
+    empty=false;if(html)html+=`<div class="leg-sep"></div>`;
+    html+=`<div class="leg-group-title">Jaringan Jalan</div>`;
+    [['#0a2d60','Arteri'],['#8b3a00','Kolektor'],['#2a5030','Lokal']].forEach(([col,lbl])=>{
+      html+=`<div class="leg-item"><div style="width:22px;height:4px;background:${col};border-radius:2px;flex-shrink:0"></div><span class="leg-txt">${lbl}</span></div>`;
+    });
+  }
+
+  // Buffer legend — show all active buffers
+  const activeBufs=Object.entries(activeBufferRadius).filter(([k,v])=>v!==null);
+  if(activeBufs.length>0){
+    if(html)html+=`<div class="leg-sep"></div>`;
+    html+=`<div class="leg-group-title">Buffer Aktif</div>`;
+    activeBufs.forEach(([key,radius])=>{
+      const cfg=BUF_CFG[key];
+      const radLabel=radius>=1000?(radius/1000)+' km':radius+' m';
+      html+=`<div class="leg-item">
+        <div style="width:16px;height:16px;border-radius:50%;border:2px dashed ${cfg.color};flex-shrink:0"></div>
+        <span class="leg-txt">${cfg.label}</span>
+        <span class="leg-val">${radLabel}</span>
+      </div>`;
+    });
+  }
+
+  w.innerHTML=empty?`<div class="leg-empty">Aktifkan layer untuk legenda.</div>`:html;
+}
+
+async function init(){
+  await Promise.all([
+    loadKec(),loadZnt(),loadJalan(),
+    loadFas('rs','rumahsakit.geojson'),
+    loadFas('pendidikan','pendidikan.geojson'),
+    loadFas('saranaibadah','saranaibadah.geojson'),
+    loadFas('pemerintahan','pemerintahan.geojson'),
+    loadFas('kantorpos','kantorpos.geojson')
+  ]);
+  buildHeat();buildSampel();updateLegend();
+  const ld=document.getElementById('loading');
+  ld.style.opacity='0';setTimeout(()=>ld.style.display='none',500);
+}
+init();
+
+function toggleLyr(name){
+  LS[name]=!LS[name];
+  document.getElementById('sw-'+name).classList.toggle('on',LS[name]);
+  const ln=document.getElementById('ln-'+name);if(ln)ln.classList.toggle('on',LS[name]);
+  if(name==='kecamatan') LS.kecamatan?kecGroup.addTo(map):map.removeLayer(kecGroup);
+  if(name==='znt')       LS.znt?zntGroup.addTo(map):map.removeLayer(zntGroup);
+  if(name==='jalan')     LS.jalan?jalanGroup.addTo(map):map.removeLayer(jalanGroup);
+  if(name==='sampel')    LS.sampel?sampelGroup.addTo(map):map.removeLayer(sampelGroup);
+  if(name==='heatmap'&&heatLayer)LS.heatmap?heatLayer.addTo(map):map.removeLayer(heatLayer);
+  updateLegend();
+}
+function toggleFas(key){
+  LS[key]=!LS[key];
+  document.getElementById('sw-'+key).classList.toggle('on',LS[key]);
+  const ln=document.getElementById('ln-'+key);if(ln)ln.classList.toggle('on',LS[key]);
+  LS[key]?fasGroups[key].addTo(map):map.removeLayer(fasGroups[key]);
+  updateLegend();
+}
+
+function setOpKec(val){
+  kecOpacity=val/100;
+  document.getElementById('op-kec-v').textContent=val+'%';
+  document.getElementById('op-kec').style.background=`linear-gradient(90deg,var(--blue) ${val}%,var(--border2) ${val}%)`;
+  kecLayersList.forEach(l=>{if(l.setStyle)l.setStyle({opacity:kecOpacity})});
+}
+function setOpZnt(val){
+  zntOpacity=val/100;
+  document.getElementById('op-znt-v').textContent=val+'%';
+  document.getElementById('op-znt').style.background=`linear-gradient(90deg,var(--blue) ${val}%,var(--border2) ${val}%)`;
+  allZntLayers.forEach(l=>{if(l.setStyle)l.setStyle({fillOpacity:zntOpacity})});
+}
+window.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('op-kec').style.background=`linear-gradient(90deg,var(--blue) 80%,var(--border2) 80%)`;
+  document.getElementById('op-znt').style.background=`linear-gradient(90deg,var(--blue) 65%,var(--border2) 65%)`;
+});
+
+function applyFilter(){
+  const selKel  =document.getElementById('f-kel').value;
+  const selKelas=document.getElementById('f-kelas').value;
+  let cntS=0;
+  allSampelMarkers.forEach(c=>{
+    const okKel  =(selKel  ==='all'||c._kel===selKel);
+    const okKelas=(selKelas==='all'||c._kelas===selKelas);
+    if(okKel&&okKelas){sampelGroup.addLayer(c);cntS++}
+    else{sampelGroup.removeLayer(c)}
+  });
+  document.getElementById('sc-s').textContent=cntS;
+  allZntLayers.forEach(lyr=>{
+    const okKelas=(selKelas==='all'||lyr._zntKelas===selKelas);
+    const okKel  =(selKel  ==='all'||lyr._kel===selKel);
+    if(okKelas&&okKel)zntGroup.addLayer(lyr);
+    else zntGroup.removeLayer(lyr);
+  });
+  if(selKel!=='all'&&KEL_BOUNDS[selKel]){
+    map.fitBounds(KEL_BOUNDS[selKel],{padding:[20,20]});
+  } else if(selKel==='all'){
+    map.fitBounds([[-7.795,110.373],[-7.768,110.396]],{padding:[20,20]});
+  }
+}
+
+function resetFilter(){
+  document.getElementById('f-kel').value='all';
+  document.getElementById('f-kelas').value='all';
+  allSampelMarkers.forEach(c=>sampelGroup.addLayer(c));
+  allZntLayers.forEach(l=>zntGroup.addLayer(l));
+  document.getElementById('sc-s').textContent=allSampelMarkers.length;
+  map.fitBounds([[-7.795,110.373],[-7.768,110.396]],{padding:[20,20]});
+}
+
+map.fitBounds([[-7.795,110.373],[-7.768,110.396]]);
+</script>
+</body>
+</html>

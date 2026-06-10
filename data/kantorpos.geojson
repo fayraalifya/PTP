@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "kantorpos",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "OBJECTID": 1, "NAMOBJ": null, "FCODE": null, "JNKPOS": 999, "REMARK": "Kantor Pos Lainnya", "SRS_ID": null, "LCODE": "HC0080", "METADATA": null }, "geometry": { "type": "Point", "coordinates": [ 110.388479875030228, -7.784853364580466, 0.0 ] } }
+]
+}

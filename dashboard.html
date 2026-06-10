@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Analitik Nilai Tanah — Kec. Gondokusuman</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f0f4fa;--surface:#ffffff;--panel:#f7f9fd;--border:#dce6f4;
+  --text:#0f1b2e;--muted:#6b7fa8;--accent:#0a7c6e;--accent2:#1558a8;
+  --st:#c83232;--t:#d4840a;--r:#0a7c6e;--sr:#1558a8;
+  --shadow:0 2px 10px rgba(21,88,168,.07);
+  --shadow-hover:0 6px 24px rgba(21,88,168,.13);
+}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── HEADER ── */
+header{
+  flex-shrink:0;height:52px;
+  background:linear-gradient(135deg,#0f1923 0%,#1a2e45 60%,#0f2a3a 100%);
+  border-bottom:2px solid #0a3d62;
+  display:flex;align-items:center;padding:0 16px;gap:12px;
+  position:relative;z-index:200;
+  box-shadow:0 2px 12px rgba(0,0,0,.3);
+}
+header::before{
+  content:'';position:absolute;bottom:-2px;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,#c83232,#e8a020,#28c080,#1558a8,#c83232);
+  background-size:300% 100%;animation:stripe 6s linear infinite;
+}
+@keyframes stripe{to{background-position:-300% 0}}
+header::after{content:'';position:absolute;inset:0;background:repeating-linear-gradient(135deg,rgba(255,255,255,.015) 0px,rgba(255,255,255,.015) 1px,transparent 1px,transparent 8px);pointer-events:none}
+
+.logos{display:flex;align-items:center;gap:10px;flex-shrink:0;position:relative;z-index:1}
+.logo-img{height:30px;width:auto;object-fit:contain}
+.logo-sep{width:1px;height:22px;background:rgba(255,255,255,.2)}
+.logo-fallback{font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:#2dd4a8;position:relative;z-index:1}
+.logo-fallback2{font-family:'Syne',sans-serif;font-weight:700;font-size:10px;color:rgba(255,255,255,.7);position:relative;z-index:1}
+.h-mid{flex:1;padding:0 14px;position:relative;z-index:1}
+.h-title{font-family:'Syne',sans-serif;font-size:12.5px;font-weight:700;color:#fff}
+.h-sub{font-size:9.5px;color:rgba(255,255,255,.45);margin-top:1px}
+.h-right{display:flex;align-items:center;gap:6px;flex-shrink:0;position:relative;z-index:1}
+.h-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;padding:3px 9px;border-radius:20px;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.55)}
+.h-nav{display:flex;gap:2px;margin-right:8px}
+.h-nav-link{font-size:10.5px;color:rgba(255,255,255,.6);padding:5px 11px;border-radius:5px;text-decoration:none;transition:all .2s;border:1px solid transparent;white-space:nowrap}
+.h-nav-link:hover{color:#fff;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15)}
+.h-nav-link.active{color:#2dd4a8;background:rgba(45,212,168,.12);border-color:rgba(45,212,168,.3)}
+
+/* ── FILTER BAR ── */
+.filter-bar{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:10px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  box-shadow:var(--shadow);
+}
+.filter-label{font-size:10px;color:var(--muted);font-family:'IBM Plex Mono',monospace;letter-spacing:.5px;text-transform:uppercase}
+select.filter{
+  background:var(--panel);color:var(--text);border:1px solid var(--border);
+  padding:5px 28px 5px 10px;border-radius:7px;font-size:11px;
+  font-family:'Instrument Sans',sans-serif;outline:none;cursor:pointer;
+  transition:border-color .18s;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7fa8'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;
+  background-color:var(--panel);
+  box-shadow:0 1px 4px rgba(21,88,168,.06);
+}
+select.filter:focus{border-color:var(--accent2)}
+.filter-sep{flex:1}
+.badge-tag{font-size:10px;font-family:'IBM Plex Mono',monospace;padding:3px 10px;background:rgba(21,88,168,.08);border:1px solid rgba(21,88,168,.2);color:var(--accent2);border-radius:20px}
+
+/* ── MAIN ── */
+.main{padding:20px 24px;display:flex;flex-direction:column;gap:18px}
+
+/* ── KPI ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.kpi{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:14px 15px;position:relative;overflow:hidden;
+  box-shadow:var(--shadow);transition:all .2s;
+}
+.kpi:hover{box-shadow:var(--shadow-hover);transform:translateY(-2px)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.kpi.c0::before{background:linear-gradient(90deg,#0a7c6e,#2dd4a8)}
+.kpi.c1::before{background:linear-gradient(90deg,#c83232,#ff8080)}
+.kpi.c2::before{background:linear-gradient(90deg,#1558a8,#4a9eff)}
+.kpi.c3::before{background:linear-gradient(90deg,#1558a8,#4a9eff)}
+.kpi.c4::before{background:linear-gradient(90deg,#b05a00,#f5a623)}
+.kpi.c5::before{background:linear-gradient(90deg,#5a30a0,#a080e0)}
+.kpi-icon{font-size:16px;margin-bottom:6px}
+.kpi-label{font-size:9px;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;font-family:'IBM Plex Mono',monospace;margin-bottom:5px}
+.kpi-val{font-size:22px;font-weight:700;font-family:'Syne',sans-serif;line-height:1}
+.kpi-sub{font-size:10px;color:var(--muted);margin-top:3px}
+.kpi-desc{font-size:9.5px;color:var(--muted);margin-top:6px;padding-top:6px;border-top:1px solid var(--border);line-height:1.4}
+.kpi-badge{display:inline-block;padding:2px 7px;border-radius:5px;font-size:9px;font-weight:500;margin-top:4px;font-family:'IBM Plex Mono',monospace}
+.good{background:rgba(10,124,110,.1);color:#0a6e5c;border:1px solid rgba(10,124,110,.2)}
+.warn{background:rgba(176,90,0,.1);color:#8a4500;border:1px solid rgba(176,90,0,.2)}
+.bad{background:rgba(200,50,50,.1);color:#a02020;border:1px solid rgba(200,50,50,.2)}
+.info{background:rgba(21,88,168,.1);color:#0e4a96;border:1px solid rgba(21,88,168,.2)}
+
+/* ── CARDS ── */
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.row3{display:grid;grid-template-columns:1.3fr 0.7fr;gap:18px}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:18px 20px;box-shadow:var(--shadow);transition:all .2s;
+}
+.card:hover{box-shadow:var(--shadow-hover)}
+.card-head{margin-bottom:4px}
+.card-title{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:space-between}
+.card-title-tag{font-size:9px;font-family:'IBM Plex Mono',monospace;color:var(--accent2);background:rgba(21,88,168,.08);padding:2px 8px;border-radius:4px;border:1px solid rgba(21,88,168,.15)}
+.card-desc{font-size:10px;color:var(--muted);margin-top:4px;margin-bottom:14px;line-height:1.5;padding-bottom:10px;border-bottom:1px solid var(--border)}
+
+.legend-row{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px}
+.leg{display:flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted)}
+.leg-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+
+.tbl{width:100%;border-collapse:collapse;font-size:11px}
+.tbl th{text-align:left;padding:7px 10px;color:var(--muted);font-weight:600;border-bottom:2px solid var(--border);font-size:9px;letter-spacing:.5px;font-family:'IBM Plex Mono',monospace;text-transform:uppercase}
+.tbl td{padding:7px 10px;color:var(--text);border-bottom:1px solid rgba(220,230,244,.8)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(21,88,168,.04)}
+.zona-pill{display:inline-block;padding:2px 7px;border-radius:4px;font-size:9px;font-weight:500;font-family:'IBM Plex Mono',monospace}
+
+.bobot-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.bobot-label{font-size:10.5px;color:var(--text);width:130px;flex-shrink:0}
+.bobot-bar-wrap{flex:1;background:rgba(21,88,168,.07);border-radius:3px;height:7px;overflow:hidden}
+.bobot-bar{height:100%;border-radius:3px;transition:width .8s ease}
+.bobot-pct{font-size:10px;font-family:'IBM Plex Mono',monospace;min-width:36px;text-align:right;font-weight:600}
+
+.footer-bar{
+  background:var(--surface);border-top:1px solid var(--border);
+  padding:8px 24px;font-family:'IBM Plex Mono',monospace;
+  font-size:7.5px;color:var(--muted);letter-spacing:.8px;text-align:center;
+  box-shadow:0 -2px 8px rgba(21,88,168,.05);
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logos">
+    <img src="logo/ITS.png" class="logo-img" alt="ITS"
+         onerror="this.outerHTML='<span class=\'logo-fallback\'>ITS</span>'">
+    <div class="logo-sep"></div>
+    <img src="logo/GEOMATIKA.png" class="logo-img" alt="Geomatika"
+         onerror="this.outerHTML='<span class=\'logo-fallback2\'>GEOMATIKA</span>'">
+  </div>
+  <div class="h-mid">
+    <div class="h-title">Dashboard Analitik Nilai Tanah — Kec. Gondokusuman</div>
+    <div class="h-sub">Dept. Teknik Geomatika ITS · Model AHP-Weighted Overlay · Kelompok 7 · 2026</div>
+  </div>
+  <nav class="h-nav">
+    <a class="h-nav-link" href="tampilanawal.html">🏠 Home</a>
+    <a class="h-nav-link" href="webgis.html">🗺 WebGIS</a>
+    <a class="h-nav-link active" href="dashboard.html">📊 Dashboard Analitik</a>
+    <a class="h-nav-link" href="storymapping.html">📖 Storymapping</a>
+  </nav>
+  <div class="h-right">
+    <span class="h-tag">Kelompok 7</span>
+    <span class="h-tag">2026</span>
+  </div>
+</header>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <span class="filter-label">Filter:</span>
+  <select class="filter" id="zona-filter" onchange="updateAll()">
+    <option value="all">Semua Zona ZNT</option>
+    <option value="sangat-tinggi">Sangat Tinggi (&gt; Rp 20 jt/m²)</option>
+    <option value="tinggi">Tinggi (Rp 10–20 jt/m²)</option>
+    <option value="rendah">Rendah (Rp 5–10 jt/m²)</option>
+    <option value="sangat-rendah">Sangat Rendah (&lt; Rp 5 jt/m²)</option>
+  </select>
+  <select class="filter" id="kel-filter" onchange="updateAll()">
+    <option value="all">Semua Kelurahan</option>
+    <option value="Kotabaru">Kotabaru</option>
+    <option value="Demangan">Demangan</option>
+    <option value="Klitren">Klitren</option>
+    <option value="Baciro">Baciro</option>
+    <option value="Terban">Terban</option>
+  </select>
+  <div class="filter-sep"></div>
+  <span class="badge-tag">AHP CR=0.038 ✓</span>
+  <span class="badge-tag">16 Titik Sampel</span>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- KPI CARDS -->
+  <div class="kpi-grid">
+    <div class="kpi c0">
+      <div class="kpi-icon">📈</div>
+      <div class="kpi-label">Nilai Tertinggi</div>
+      <div class="kpi-val" id="kpi-max" style="color:#0a6e5c">–</div>
+      <div class="kpi-sub">juta Rp/m²</div>
+      <div class="kpi-badge good" id="kpi-max-loc">–</div>
+      <div class="kpi-desc">Titik sampel dengan nilai tanah tertinggi di wilayah studi. Umumnya berada di koridor jalan arteri utama dengan aksesibilitas tinggi.</div>
+    </div>
+    <div class="kpi c1">
+      <div class="kpi-icon">📉</div>
+      <div class="kpi-label">Nilai Terendah</div>
+      <div class="kpi-val" id="kpi-min" style="color:#a02020">–</div>
+      <div class="kpi-sub">juta Rp/m²</div>
+      <div class="kpi-badge bad" id="kpi-min-loc">–</div>
+      <div class="kpi-desc">Titik sampel dengan nilai tanah terendah, umumnya di kawasan permukiman dalam dengan keterbatasan aksesibilitas ke fasilitas utama.</div>
+    </div>
+    <div class="kpi c2">
+      <div class="kpi-icon">⚖️</div>
+      <div class="kpi-label">Nilai Median</div>
+      <div class="kpi-val" id="kpi-med" style="color:#0e4a96">–</div>
+      <div class="kpi-sub">juta Rp/m²</div>
+      <div class="kpi-desc">Nilai tengah distribusi harga tanah. Median lebih representatif daripada rata-rata karena tidak terpengaruh outlier ekstrem.</div>
+    </div>
+    <div class="kpi c3">
+      <div class="kpi-icon">🧮</div>
+      <div class="kpi-label">Rata-rata</div>
+      <div class="kpi-val" id="kpi-avg" style="color:#0e4a96">–</div>
+      <div class="kpi-sub">juta Rp/m²</div>
+      <div class="kpi-desc">Nilai rata-rata harga tanah seluruh sampel. Perbedaan antara rata-rata dan median mencerminkan adanya kemiringan distribusi (skewness).</div>
+    </div>
+    <div class="kpi c4">
+      <div class="kpi-icon">📐</div>
+      <div class="kpi-label">COD</div>
+      <div class="kpi-val" id="kpi-cod" style="color:#8a4500">–</div>
+      <div class="kpi-sub">% Coeff. of Dispersion</div>
+      <div class="kpi-badge warn" id="kpi-cod-badge">–</div>
+      <div class="kpi-desc">Coefficient of Dispersion (COD) mengukur keseragaman penilaian. Standar IAAO: COD &lt;15% = baik, 15–25% = moderat.</div>
+    </div>
+    <div class="kpi c5">
+      <div class="kpi-icon">📍</div>
+      <div class="kpi-label">Titik Sampel</div>
+      <div class="kpi-val" id="kpi-n" style="color:#5a30a0">–</div>
+      <div class="kpi-sub">titik validasi lapangan</div>
+      <div class="kpi-badge info">4 Zona ZNT</div>
+      <div class="kpi-desc">Jumlah titik sampel harga transaksi lapangan yang digunakan untuk memvalidasi dan mengkalibrasi model zona nilai tanah (ZNT).</div>
+    </div>
+  </div>
+
+  <!-- ROW 1: Histogram + Bar Chart -->
+  <div class="row2">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">
+          Histogram Distribusi Nilai Tanah
+          <span class="card-title-tag" id="hist-info">n=16</span>
+        </div>
+        <div class="card-desc">Menampilkan sebaran frekuensi nilai tanah per kelas zona. Visualisasi ini membantu mengidentifikasi kelas zona yang paling dominan dan pola distribusi harga di Kec. Gondokusuman secara keseluruhan.</div>
+      </div>
+      <div class="legend-row">
+        <span class="leg"><span class="leg-sq" style="background:#c83232"></span>Sangat Tinggi (&gt;20 jt)</span>
+        <span class="leg"><span class="leg-sq" style="background:#d4840a"></span>Tinggi (10–20 jt)</span>
+        <span class="leg"><span class="leg-sq" style="background:#0a7c6e"></span>Rendah (5–10 jt)</span>
+        <span class="leg"><span class="leg-sq" style="background:#1558a8"></span>Sangat Rendah (&lt;5 jt)</span>
+      </div>
+      <div style="position:relative;height:210px">
+        <canvas id="histChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">
+          Perbandingan Nilai per Kelurahan
+          <span class="card-title-tag">rata-rata jt/m²</span>
+        </div>
+        <div class="card-desc">Bar chart nilai rata-rata tanah diurutkan dari tertinggi ke terendah per kelurahan. Terban & Demangan mencatat nilai tertinggi karena mencakup titik-titik di koridor komersial premium, sementara Baciro mencatat nilai terendah akibat aksesibilitas terbatas ke fasilitas utama.</div>
+      </div>
+      <div style="position:relative;height:240px">
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: Scatter + Bobot AHP -->
+  <div class="row3">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">
+          Scatter Plot: Aksesibilitas vs Nilai Tanah
+          <span class="card-title-tag">regresi linear</span>
+        </div>
+        <div class="card-desc">Menggambarkan hubungan antara skor aksesibilitas jalan (1–5) dengan nilai tanah per m². Trendline regresi linear menunjukkan korelasi positif — semakin tinggi aksesibilitas, semakin tinggi nilai tanah. Ini mengkonfirmasi bobot aksesibilitas jalan (34,44%) sebagai faktor dominan dalam model AHP.</div>
+      </div>
+      <div class="legend-row">
+        <span class="leg"><span class="leg-sq" style="background:#c83232;border-radius:50%"></span>Sangat Tinggi</span>
+        <span class="leg"><span class="leg-sq" style="background:#d4840a;border-radius:50%"></span>Tinggi</span>
+        <span class="leg"><span class="leg-sq" style="background:#0a7c6e;border-radius:50%"></span>Rendah</span>
+        <span class="leg"><span class="leg-sq" style="background:#1558a8;border-radius:50%"></span>Sangat Rendah</span>
+      </div>
+      <div style="position:relative;height:250px">
+        <canvas id="scatterChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">
+          Bobot Variabel AHP
+          <span class="card-title-tag">CR = 0.038</span>
+        </div>
+        <div class="card-desc">Bobot setiap faktor penentu nilai tanah hasil analisis AHP (Analytical Hierarchy Process). CR = 0.038 &lt; 0.1 menunjukkan konsistensi pembobotan yang valid. Aksesibilitas jalan menjadi faktor paling berpengaruh.</div>
+      </div>
+      <div id="bobot-container" style="margin-top:8px"></div>
+    </div>
+  </div>
+
+  <!-- ROW 3: Box Plot + Tabel -->
+  <div class="row2">
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">
+          Box Plot Distribusi per Zona ZNT
+          <span class="card-title-tag">Q1 · Median · Q3</span>
+        </div>
+        <div class="card-desc">Menampilkan sebaran statistik (nilai minimum, Q1, median, Q3, dan maksimum) nilai tanah per kelas zona. Zona Sangat Tinggi menunjukkan rentang nilai paling lebar, mencerminkan variasi lokasi yang signifikan di koridor utama Kotabaru.</div>
+      </div>
+      <div style="position:relative;height:210px">
+        <canvas id="boxChart"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">
+          Ringkasan Data Sampel per Kelurahan
+          <span class="card-title-tag">statistik</span>
+        </div>
+        <div class="card-desc">Tabel agregasi nilai tanah rata-rata per kelurahan berdasarkan data sampel lapangan. Digunakan sebagai acuan validasi terhadap peta ZNT yang dihasilkan dari model AHP-Weighted Overlay.</div>
+      </div>
+      <div style="overflow-x:auto;margin-top:4px">
+        <table class="tbl" id="summary-table">
+          <thead>
+            <tr>
+              <th>Kelurahan</th>
+              <th>Zona Dominan</th>
+              <th>Rerata (jt/m²)</th>
+              <th>Min–Max (jt)</th>
+              <th>Sampel</th>
+            </tr>
+          </thead>
+          <tbody id="tbl-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer-bar">DEPT. TEKNIK GEOMATIKA · INSTITUT TEKNOLOGI SEPULUH NOPEMBER · 2026 · KELOMPOK 7</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const SAMPEL = [
+  {nama:'Koridor Jalan Solo, komersial tinggi',       kel:'Kotabaru', kelas:'sangat-tinggi', harga:28.22, skor:4.8},
+  {nama:'Dekat RS & pusat kota Kotabaru',             kel:'Kotabaru', kelas:'sangat-tinggi', harga:32.91, skor:4.9},
+  {nama:'Koridor Urip Sumoharjo, bisnis utama',       kel:'Kotabaru', kelas:'sangat-tinggi', harga:45.77, skor:5.0},
+  {nama:'Pemukiman, akses sedang',                    kel:'Baciro',   kelas:'rendah',        harga:10.00, skor:2.5},
+  {nama:'Dekat sekolah & jalan kolektor',             kel:'Baciro',   kelas:'tinggi',        harga:13.64, skor:3.2},
+  {nama:'Permukiman dalam, jauh jalan utama',         kel:'Baciro',   kelas:'rendah',        harga:8.44,  skor:2.0},
+  {nama:'Dekat fasilitas pendidikan',                 kel:'Baciro',   kelas:'tinggi',        harga:15.30, skor:3.4},
+  {nama:'Permukiman padat Baciro',                    kel:'Baciro',   kelas:'rendah',        harga:9.80,  skor:2.2},
+  {nama:'Dekat Demangan, akses baik',                 kel:'Demangan', kelas:'tinggi',        harga:12.42, skor:3.1},
+  {nama:'Koridor Demangan',                           kel:'Demangan', kelas:'tinggi',        harga:12.50, skor:3.2},
+  {nama:'Pinggiran, aksesibilitas terbatas',          kel:'Baciro',   kelas:'sangat-rendah', harga:5.62,  skor:1.4},
+  {nama:'Baciro timur, jauh jalan utama',             kel:'Baciro',   kelas:'sangat-rendah', harga:6.88,  skor:1.6},
+  {nama:'Dekat fasilitas umum Klitren',               kel:'Klitren',  kelas:'tinggi',        harga:10.00, skor:3.0},
+  {nama:'Kotabaru heritage, nilai tinggi',            kel:'Terban',   kelas:'sangat-tinggi', harga:21.48, skor:4.6},
+  {nama:'Pusat Kotabaru, komersial premium',          kel:'Terban',   kelas:'sangat-tinggi', harga:47.00, skor:5.0},
+  {nama:'Jalan utama Kotabaru, nilai tertinggi',      kel:'Kotabaru', kelas:'sangat-tinggi', harga:56.82, skor:5.0},
+];
+
+const ZONA_COLOR = {
+  'sangat-tinggi':'#c83232','tinggi':'#d4840a',
+  'rendah':'#0a7c6e','sangat-rendah':'#1558a8'
+};
+const ZONA_LABEL = {
+  'sangat-tinggi':'Sangat Tinggi','tinggi':'Tinggi',
+  'rendah':'Rendah','sangat-rendah':'Sangat Rendah'
+};
+const KEL_ORDER = ['Kotabaru','Demangan','Klitren','Terban','Baciro'];
+
+const BOBOT = [
+  {label:'Aksesibilitas jalan', pct:34.44, color:'#0a7c6e'},
+  {label:'Demografi',           pct:23.17, color:'#1558a8'},
+  {label:'Fasilitas kesehatan', pct:15.29, color:'#5a30a0'},
+  {label:'Fasilitas pendidikan',pct:11.14, color:'#d4840a'},
+  {label:'Sarana ibadah',       pct:7.48,  color:'#0a7c6e'},
+  {label:'Kantor pemerintahan', pct:5.57,  color:'#c83232'},
+  {label:'Kantor pos',          pct:2.90,  color:'#888'},
+];
+
+Chart.defaults.color = '#6b7fa8';
+Chart.defaults.font  = {family:"'IBM Plex Mono', monospace", size:10};
+
+let charts = {};
+
+const GRID = { color:'rgba(21,88,168,.07)', borderColor:'#dce6f4' };
+const TICK = { color:'#6b7fa8', font:{size:10} };
+
+function getFiltered(){
+  const z = document.getElementById('zona-filter').value;
+  const k = document.getElementById('kel-filter').value;
+  return SAMPEL.filter(s=>(z==='all'||s.kelas===z)&&(k==='all'||s.kel===k));
+}
+
+function calcStats(arr){
+  if(!arr.length) return {max:0,min:0,med:0,avg:0,cod:0,n:0,maxLoc:'',minLoc:''};
+  const vals = arr.map(s=>s.harga).sort((a,b)=>a-b);
+  const n = vals.length;
+  const avg = vals.reduce((a,b)=>a+b,0)/n;
+  const med = n%2===0?(vals[n/2-1]+vals[n/2])/2:vals[Math.floor(n/2)];
+  const mad = vals.map(v=>Math.abs(v-med)).sort((a,b)=>a-b);
+  const medMad = mad.length%2===0?(mad[mad.length/2-1]+mad[mad.length/2])/2:mad[Math.floor(mad.length/2)];
+  const cod = (medMad/med)*100;
+  const maxS = arr.reduce((a,b)=>b.harga>a.harga?b:a);
+  const minS = arr.reduce((a,b)=>b.harga<a.harga?b:a);
+  return {max:Math.max(...vals),min:Math.min(...vals),med,avg,cod,n,maxLoc:maxS.kel,minLoc:minS.kel};
+}
+
+function updateKPI(data){
+  const s = calcStats(data);
+  document.getElementById('kpi-max').textContent = s.max.toFixed(1);
+  document.getElementById('kpi-min').textContent = s.min.toFixed(1);
+  document.getElementById('kpi-med').textContent = s.med.toFixed(1);
+  document.getElementById('kpi-avg').textContent = s.avg.toFixed(1);
+  document.getElementById('kpi-cod').textContent = s.cod.toFixed(1);
+  document.getElementById('kpi-n').textContent   = s.n;
+  document.getElementById('kpi-max-loc').textContent = s.maxLoc || '–';
+  document.getElementById('kpi-min-loc').textContent = s.minLoc || '–';
+  const codBadge = document.getElementById('kpi-cod-badge');
+  if(s.cod < 15){ codBadge.textContent='✓ Baik (< 15%)'; codBadge.className='kpi-badge good'; }
+  else if(s.cod < 25){ codBadge.textContent='⚠ Moderat'; codBadge.className='kpi-badge warn'; }
+  else{ codBadge.textContent='✗ Tinggi'; codBadge.className='kpi-badge bad'; }
+}
+
+function buildBobot(){
+  const c = document.getElementById('bobot-container');
+  c.innerHTML = '';
+  BOBOT.forEach(b=>{
+    c.innerHTML += `<div class="bobot-row">
+      <span class="bobot-label">${b.label}</span>
+      <div class="bobot-bar-wrap"><div class="bobot-bar" style="width:${b.pct*2.5}%;background:${b.color}"></div></div>
+      <span class="bobot-pct" style="color:${b.color}">${b.pct.toFixed(1)}%</span>
+    </div>`;
+  });
+}
+
+function buildTable(data){
+  const body = document.getElementById('tbl-body');
+  const kelMap = {};
+  data.forEach(s=>{
+    if(!kelMap[s.kel]) kelMap[s.kel]={kelas:s.kelas,harga:[],n:0,maxH:0};
+    kelMap[s.kel].harga.push(s.harga);
+    kelMap[s.kel].n++;
+    if(s.harga > kelMap[s.kel].maxH){kelMap[s.kel].maxH=s.harga;kelMap[s.kel].kelas=s.kelas;}
+  });
+  body.innerHTML = '';
+  const rows = KEL_ORDER
+    .filter(k=>kelMap[k])
+    .map(k=>{
+      const d=kelMap[k];
+      return {k, avg:d.harga.reduce((a,b)=>a+b,0)/d.harga.length,
+              mn:Math.min(...d.harga), mx:Math.max(...d.harga),
+              kelas:d.kelas, n:d.n};
+    })
+    .sort((a,b)=>b.avg-a.avg);
+  rows.forEach(({k,avg,mn,mx,kelas,n})=>{
+    const col = ZONA_COLOR[kelas];
+    body.innerHTML += `<tr>
+      <td><b>${k}</b></td>
+      <td><span class="zona-pill" style="background:${col}15;color:${col};border:1px solid ${col}35">${ZONA_LABEL[kelas]}</span></td>
+      <td style="font-family:'IBM Plex Mono',monospace;color:#0a6e5c;font-weight:600">${avg.toFixed(1)}</td>
+      <td style="font-family:'IBM Plex Mono',monospace;color:var(--muted);font-size:10px">${mn.toFixed(1)}–${mx.toFixed(1)}</td>
+      <td style="color:var(--muted)">${n}</td>
+    </tr>`;
+  });
+}
+
+function destroyChart(key){ if(charts[key]){ charts[key].destroy(); delete charts[key]; } }
+
+function buildHist(data){
+  destroyChart('hist');
+  const counts = {'sangat-tinggi':0,'tinggi':0,'rendah':0,'sangat-rendah':0};
+  data.forEach(s=>counts[s.kelas]++);
+  document.getElementById('hist-info').textContent = 'n='+data.length;
+  charts.hist = new Chart(document.getElementById('histChart'),{
+    type:'bar',
+    data:{
+      labels:['Sangat Tinggi\n(>20 jt)','Tinggi\n(10–20 jt)','Rendah\n(5–10 jt)','Sangat Rendah\n(<5 jt)'],
+      datasets:[{
+        data:[counts['sangat-tinggi'],counts['tinggi'],counts['rendah'],counts['sangat-rendah']],
+        backgroundColor:['#c8323222','#d4840a22','#0a7c6e22','#1558a822'],
+        borderColor:['#c83232','#d4840a','#0a7c6e','#1558a8'],
+        borderWidth:2,borderRadius:6
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.raw} titik sampel`}}},
+      scales:{
+        x:{ticks:{...TICK,maxRotation:0},grid:GRID,border:{color:GRID.borderColor}},
+        y:{ticks:{...TICK,stepSize:1},grid:GRID,border:{color:GRID.borderColor},
+           title:{display:true,text:'Jumlah sampel',color:'#6b7fa8',font:{size:10}},min:0}
+      }
+    }
+  });
+}
+
+function buildBar(data){
+  destroyChart('bar');
+  const kelMap = {};
+  data.forEach(s=>{
+    if(!kelMap[s.kel]) kelMap[s.kel]=[];
+    kelMap[s.kel].push(s.harga);
+  });
+  const labels=[],vals=[],colors=[],borders=[];
+  KEL_ORDER
+    .filter(k=>kelMap[k])
+    .map(k=>({k, avg:kelMap[k].reduce((a,b)=>a+b,0)/kelMap[k].length, max:Math.max(...kelMap[k])}))
+    .sort((a,b)=>b.avg-a.avg)
+    .forEach(({k,avg,max})=>{
+      labels.push(k);
+      vals.push(parseFloat(avg.toFixed(2)));
+      colors.push(max>20?'#c8323222':max>10?'#d4840a22':'#0a7c6e22');
+      borders.push(max>20?'#c83232':max>10?'#d4840a':'#0a7c6e');
+    });
+  charts.bar = new Chart(document.getElementById('barChart'),{
+    type:'bar',
+    data:{labels,datasets:[{data:vals,backgroundColor:colors,borderColor:borders,borderWidth:2,borderRadius:6}]},
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Rp ${ctx.raw.toFixed(1)} jt/m²`}}},
+      scales:{
+        x:{ticks:{...TICK,callback:v=>v+' jt'},grid:GRID,border:{color:GRID.borderColor}},
+        y:{ticks:TICK,grid:{display:false},border:{color:GRID.borderColor}}
+      }
+    }
+  });
+}
+
+function buildScatter(data){
+  destroyChart('scatter');
+  const datasets = ['sangat-tinggi','tinggi','rendah','sangat-rendah'].map(k=>({
+    label:ZONA_LABEL[k],
+    data:data.filter(s=>s.kelas===k).map(s=>({x:s.skor,y:s.harga})),
+    backgroundColor:ZONA_COLOR[k]+'55',borderColor:ZONA_COLOR[k],
+    borderWidth:2,pointRadius:7,pointHoverRadius:10
+  }));
+  const n=data.length;
+  const mX=data.reduce((s,d)=>s+d.skor,0)/n, mY=data.reduce((s,d)=>s+d.harga,0)/n;
+  const slope=data.reduce((s,d)=>s+(d.skor-mX)*(d.harga-mY),0)/data.reduce((s,d)=>s+(d.skor-mX)**2,0);
+  const ic=mY-slope*mX;
+  datasets.push({label:'Trendline',data:[{x:1,y:parseFloat((slope+ic).toFixed(2))},{x:5.5,y:parseFloat((slope*5.5+ic).toFixed(2))}],
+    type:'line',borderColor:'#1558a855',borderWidth:2,borderDash:[5,4],pointRadius:0,fill:false});
+  charts.scatter = new Chart(document.getElementById('scatterChart'),{
+    type:'scatter',data:{datasets},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>ctx.dataset.label==='Trendline'?null:`${ctx.dataset.label}: skor ${ctx.raw.x} | Rp ${ctx.raw.y} jt/m²`}}},
+      scales:{
+        x:{min:0.8,max:6,title:{display:true,text:'Skor Aksesibilitas Jalan (1–5)',color:'#6b7fa8',font:{size:10}},ticks:TICK,grid:GRID,border:{color:GRID.borderColor}},
+        y:{min:0,max:65,title:{display:true,text:'Nilai Tanah (jt Rp/m²)',color:'#6b7fa8',font:{size:10}},ticks:{...TICK,callback:v=>v+' jt'},grid:GRID,border:{color:GRID.borderColor}}
+      }
+    }
+  });
+}
+
+function buildBox(data){
+  destroyChart('box');
+  function stats(vals){
+    const s=[...vals].sort((a,b)=>a-b), n=s.length;
+    const q1=s[Math.floor(n*.25)], q3=s[Math.floor(n*.75)];
+    const med=n%2===0?(s[n/2-1]+s[n/2])/2:s[Math.floor(n/2)];
+    return {min:s[0],q1,med,q3,max:s[n-1]};
+  }
+  const zones=['sangat-tinggi','tinggi','rendah','sangat-rendah'];
+  const labels=zones.map(z=>ZONA_LABEL[z]);
+  const st=zones.map(z=>stats(data.filter(s=>s.kelas===z).map(s=>s.harga).length?data.filter(s=>s.kelas===z).map(s=>s.harga):[0]));
+  const colors=zones.map(z=>ZONA_COLOR[z]);
+  charts.box = new Chart(document.getElementById('boxChart'),{
+    type:'bar',
+    data:{
+      labels,
+      datasets:[
+        {label:'base',data:st.map(s=>s.q1),backgroundColor:'transparent',borderColor:'transparent',stack:'box'},
+        {label:'Q1–Median',data:st.map(s=>s.med-s.q1),backgroundColor:colors.map(c=>c+'44'),borderColor:colors,borderWidth:2,borderRadius:3,stack:'box'},
+        {label:'Median–Q3',data:st.map(s=>s.q3-s.med),backgroundColor:colors.map(c=>c+'88'),borderColor:colors,borderWidth:2,stack:'box'},
+        {label:'top',data:st.map(s=>s.max-s.q3),backgroundColor:'transparent',borderColor:'transparent',stack:'box'},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:(ctx)=>{
+          const i=ctx.dataIndex, s=st[i];
+          return[`Min: ${s.min.toFixed(1)} jt`,`Q1: ${s.q1.toFixed(1)} jt`,`Median: ${s.med.toFixed(1)} jt`,`Q3: ${s.q3.toFixed(1)} jt`,`Max: ${s.max.toFixed(1)} jt`];
+        }}}},
+      scales:{
+        x:{ticks:TICK,grid:{display:false},border:{color:GRID.borderColor},stacked:true},
+        y:{ticks:{...TICK,callback:v=>v+' jt'},grid:GRID,border:{color:GRID.borderColor},stacked:true,min:0}
+      }
+    }
+  });
+}
+
+function updateAll(){
+  const data = getFiltered();
+  updateKPI(data);
+  buildHist(data);
+  buildBar(data);
+  buildScatter(data);
+  buildBox(data);
+  buildTable(data);
+}
+
+buildBobot();
+updateAll();
+</script>
+</body>
+</html>
